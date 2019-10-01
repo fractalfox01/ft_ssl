@@ -6,225 +6,142 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/21 21:05:42 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/09/26 20:17:19 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/10/01 15:47:39 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../vogsphere_ftprintf/includes/ft_printf.h"
+#include "libft/libft.h"
 #include "ft_ssl.h"
-#include <limits.h>
 
 /*
 ** Resources:
+** MD5 operates on 32-bit words
 ** https://en.wikipedia.org/wiki/MD5#Algorithm
 */
 
-static void	set_round_1(t_md5 *md5)
-{
-	int	i;
-
-	i = 0;
-	while (i < 16)
-	{
-		md5->rps[i++] = 7;
-		md5->rps[i++] = 12;
-		md5->rps[i++] = 17;
-		md5->rps[i++] = 22;
-	}
-}
-
-static void	set_round_2(t_md5 *md5)
-{
-	int	i;
-
-	i = 0;
-	while (i < 16)
-	{
-		md5->rps[i++] = 5;
-		md5->rps[i++] = 9;
-		md5->rps[i++] = 14;
-		md5->rps[i++] = 20;
-	}
-}
-
-static void	set_round_3(t_md5 *md5)
-{
-	int	i;
-
-	i = 0;
-	while (i < 16)
-	{
-		md5->rps[i++] = 4;
-		md5->rps[i++] = 11;
-		md5->rps[i++] = 16;
-		md5->rps[i++] = 23;
-	}
-}
-
-static void	set_round_4(t_md5 *md5)
-{
-	int	i;
-
-	i = 0;
-	while (i < 16)
-	{
-		md5->rps[i++] = 6;
-		md5->rps[i++] = 10;
-		md5->rps[i++] = 15;
-		md5->rps[i++] = 21;
-	}
-}
-
-static int F(u_int32_ssl *x, u_int32_ssl *y, u_int32_ssl *z)
-{
-	return ((x && y) || (!x && z));
-}
-
-// static void rot1()
-// {
-	
-// }
-
-void		init_rounds(t_md5 *md5)
-{
-	set_round_1(md5);
-	set_round_2(md5);
-	set_round_3(md5);
-	set_round_4(md5);
-}
-
-void		init_table(t_md5 *md5)
+void		init_table(t_md5_ctx *md5)
 {
 	int	i;
 
 	i = 0;
 	while (i < 64)
 	{
-		md5->k[i] = floor((ft_power(2, 32) * ft_abs(sin(i + 1))));
+		md5->in[i] = floor((ft_power(2, 32) * ft_abs(sin(i + 1))));
 		i++;
 	}
 }
 
-void		init_vars(t_md5 *md5, char *msg)
+void		smd5_update(t_md5_ctx *context, ft_uchar *input, ft_ulong mlen)
 {
-	int	i;
-	int	j;
+	ft_ulong	t;
+	ft_uchar	*p;
 
-	i = 0;
-	j = 0;
-	md5->a0 = 0x67452301;
-	md5->b0 = 0xefcdab89;
-	md5->c0 = 0x98badcfe;
-	md5->d0 = 0x10325476;
-}
-
-void		md5_init(t_md5 *md5, char *msg)
-{
-	int	i;
-
-	i = 0;
-	md5->m = NULL;
-	init_rounds(md5);
-	init_table(md5);
-	init_vars(md5, msg);
-}
-
-void	hlpr(unsigned char *msg, t_md5 *md5, int mlen)
-{
-	int i = 0;
-	int j = 0;
-	int b = 16;
-
-	while (j < mlen && (i - 4) < mlen)
+	t = context->i[0];
+	if ((context->i[0] = (t + ((ft_ulong)mlen << 3))) < t)
 	{
-		md5->m[j] = (unsigned int *)malloc(sizeof(unsigned int) * b);
-		while (i < b)
-		{
-			md5->m[j][i] = (msg[i + 3] << 24);
-			md5->m[j][i] = (msg[i + 2] << 16);
-			md5->m[j][i] = (msg[i + 1] << 8);
-			md5->m[j][i] = (msg[i + 0] << 0);
-			i++;
-		}
-		b += 16;
-		j++;
+		context->i[1]++;
+		context->i[1] += mlen >> 29;
+	}
+	t = (t >> 3) & 0x3f;
+	if (t)
+		*p = *((ft_uchar *)context->in + t);
+	t = 64 - t;
+	if (mlen < t)
+	{
+		ft_memcpy(p, input, mlen);
+		return ;
 	}
 }
 
-void	new_ustr(t_md5 *md5, unsigned char *msg, int mlen)
+int			md5_init(t_md5_ctx *context)
 {
-	int i = 0;
-
-	while (i < mlen)
+	if (context)
 	{
-		md5->message[i] = msg[i];
+		ft_memset((void *)context->in, 0, 64);
+		init_table(context);
+		context->buf[0] = 0x67452301;
+		context->buf[1] = 0xefcdab89;
+		context->buf[2] = 0x98badcfe;
+		context->buf[3] = 0x10325476;
+		context->i[0] = 0;
+		context->i[1] = 0;
+		return (1);
+	}
+	return (0);
+}
+
+static int	get_pad_nbr(int bitlen)
+{
+	int	padbits;
+
+	padbits = 0;
+	while (((bitlen + padbits) % 512) < 448)
+	{
+		padbits++;
+	}
+	return (padbits);
+}
+
+int			md5_pad_msg(t_md5_ctx *context, int bitlen, ft_uchar *d)
+{
+	int			padb;
+	int			orig;
+	int			one_bit;
+	int			i;
+	int			a;
+	int			b;
+	long	final;
+	ft_uchar	*p_msg;
+
+	orig = bitlen;
+	one_bit = orig;
+	padb = 0;
+	i = 0;
+	a = 0;
+	b = 0;
+	if (bitlen > 512)
+	{
+		i = bitlen / 512;
+		bitlen = bitlen - (i * 512);
+		i = 0;
+	}
+	padb = get_pad_nbr(bitlen * 8);
+	a = ((((orig * 8) + padb)) + 64); //total size (in bits) needed for p_msg
+	p_msg = (ft_uchar *)malloc(sizeof(ft_uchar) * (a / 8));
+	ft_bzero(p_msg, (a / 8));
+	a = 0;
+	ft_memcpy(p_msg, d, orig);
+	p_msg[one_bit++] = 0x80;
+	i = 56;
+	final = (long long)(orig * 8) >> i;
+	while (a++ < 8)
+	{
+		ft_printf("int is %d\n", final);
+		p_msg[(orig + ((padb + (56 - i)) / 8))] = final;
+		i -= 8;
+		final = (long long)(orig * 8) >> i;
+	}
+	context->size = ((((orig) + (padb / 8))) + 8);
+	context->msg = (ft_uchar *)malloc(sizeof(ft_uchar) * context->size);
+	ft_memcpy(context->msg, p_msg, ((((orig) + (padb / 8))) + 8));
+	return (1);
+}
+
+ft_uchar		*ft_md5(const ft_uchar *d, unsigned long n, ft_uchar *md)
+{
+	t_md5_ctx		context;
+	unsigned int	i;
+
+	i = 0;
+	if (!md5_init(&context))
+		return (NULL);
+	md5_pad_msg(&context, ft_strlen((char *)d), (ft_uchar *)d);
+	while (i < context.size)
+	{
+		ft_printf("%10b ", context.msg[i]);
 		i++;
+		if ((i % 8) == 0 && i != 0)
+			ft_printf("\n");
 	}
-	md5->message[i] = 0x80;
-}
-
-int		get_i(mlen)
-{
-	int i;
-
-	i = 0;
-	while (((mlen + i) % 512) != 448)
-		i++;
-	return (i);
-}
-
-void	pad_message(t_md5 *md5, unsigned char *msg, int mlen)
-{
-	unsigned char	*msg2;
-	int i = 0;
-	int a = 0;
-	int b = mlen;
-	int c = 0;
-	int j = 0;
-	md5->message = (unsigned char *)malloc(sizeof(unsigned char) * (mlen) + 1);
-	new_ustr(md5, msg, mlen);
-	if (mlen > 512)
-	{
-		mlen -= (mlen / 512) * 512;
-	}
-	i = get_i(mlen);
-	ft_printf("b: %d\nsize: %d\n", b, (mlen + i + 2 + 64 + b));
-	c = (mlen + i + 2 + 64 + b);
-	md5->m = (unsigned int **)malloc(sizeof(unsigned int*) * c);
-	hlpr(msg, md5, b);
-	c = b + 2;
-	while (c < (mlen + i + 1 + 64 + b))
-	{
-		md5->m[c++] = 0;
-	}
-	md5->n = (mlen + i + 1 + 64 + b);
-}
-
-unsigned	*ft_md5(const char *msg, int mlen)
-{
-	t_md5			md5;
-	unsigned int	ret;
-	unsigned int	tmp;
-
-	tmp = 0;
-	int a = 0;
-	int i = 0;
-	int j = 0;
-	if (msg && mlen)
-	{
-		md5_init(&md5, (char *)msg);
-		pad_message(&md5, (unsigned char *)msg, mlen);
-		while ((i) < md5.n)
-		{
-			while (j < 16)
-			{
-				ft_printf("message: %u\n", md5.m[i][j]);
-				j++;
-				a++;
-			}
-			j = 0;
-			i++;
-		}
-	}
-	return (FT_SSL_NULL);
+	return (md);
 }
