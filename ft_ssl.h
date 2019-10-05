@@ -2,6 +2,7 @@
 # define FT_SSL_H
 
 # include <math.h>
+# include <fcntl.h>
 # include "libft/libft.h"
 
 /*
@@ -17,6 +18,16 @@
  **    ◦malloc
  **    ◦free
  */
+
+# ifndef BUF_SIZE
+
+/*
+** BUF_SIZE used for get_n_char in ft_ssl_preform_action
+*/
+
+#  define BUF_SIZE 64
+
+# endif
 
 # define DEBUG 0
 # define FT_SSL_NULL		(void *)0
@@ -41,13 +52,13 @@
 # define FT_UNDERLINE		"\033[4m"
 # define FT_END_ATTR		"\033[0m"
 
-typedef unsigned char	ft_uchar;
-typedef unsigned long	ft_ulong;
-typedef	long long		ft_llong;
+# define A0(x, y, z)()
 
 typedef struct		s_ft_getopt
 {
-	char			flag[2];
+	char			*message;
+	char			*chunk;
+	char			flag[5];
 	int				i;
 	int				c;
     ft_uchar		*ft_md5;
@@ -64,12 +75,13 @@ typedef struct		s_ft_md5
 	unsigned int	size;
 }               	t_md5_ctx;
 
-unsigned char		*ft_md5(const unsigned char *d, unsigned long n, unsigned char *md);
+unsigned char		*ft_md5(const ft_uchar *d, ft_ulong n, ft_uchar *md);
+// int					ft_md5_update(t_md5_ctx *context, ft_uchar *msg, ft_ulong mlen);
+//int					ft_md5_final();
 void				ft_ssl_message(char *invalid);
 void				ft_ssl_free_optins(t_getopt *glb_opt);
 void				ft_ssl_preform_action(t_getopt *glb_opt, int ac, char **av);
 int					ft_getopt(int ac, char **av, t_getopt *glb_opt);
 void				ft_opt_init(t_getopt *glb_opt);
-int					ft_scmp(const char *s1, const char *s2);
 
 #endif

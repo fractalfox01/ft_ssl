@@ -5,19 +5,12 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/09/21 21:05:42 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/10/01 15:47:39 by tvandivi         ###   ########.fr       */
+/*   Created: 2019/10/02 10:28:18 by tvandivi          #+#    #+#             */
+/*   Updated: 2019/10/04 16:32:24 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft/libft.h"
 #include "ft_ssl.h"
-
-/*
-** Resources:
-** MD5 operates on 32-bit words
-** https://en.wikipedia.org/wiki/MD5#Algorithm
-*/
 
 void		init_table(t_md5_ctx *md5)
 {
@@ -31,7 +24,7 @@ void		init_table(t_md5_ctx *md5)
 	}
 }
 
-void		smd5_update(t_md5_ctx *context, ft_uchar *input, ft_ulong mlen)
+void		md5_update(t_md5_ctx *context, ft_uchar *input, ft_ulong mlen)
 {
 	ft_ulong	t;
 	ft_uchar	*p;
@@ -55,6 +48,9 @@ void		smd5_update(t_md5_ctx *context, ft_uchar *input, ft_ulong mlen)
 
 int			md5_init(t_md5_ctx *context)
 {
+	int i;
+
+	i = 0;
 	if (context)
 	{
 		ft_memset((void *)context->in, 0, 64);
@@ -65,6 +61,8 @@ int			md5_init(t_md5_ctx *context)
 		context->buf[3] = 0x10325476;
 		context->i[0] = 0;
 		context->i[1] = 0;
+		while (i < 16)
+			context->digest[i++] = 0;
 		return (1);
 	}
 	return (0);
@@ -114,12 +112,11 @@ int			md5_pad_msg(t_md5_ctx *context, int bitlen, ft_uchar *d)
 	p_msg[one_bit++] = 0x80;
 	i = 56;
 	final = (long long)(orig * 8) >> i;
-	while (a++ < 8)
+	while (a++ < 8) // update last 64 bits with totat bits in original message
 	{
-		ft_printf("int is %d\n", final);
 		p_msg[(orig + ((padb + (56 - i)) / 8))] = final;
 		i -= 8;
-		final = (long long)(orig * 8) >> i;
+		final = (long long)(orig * 8) >> i; // shift over in 8 bit increments;
 	}
 	context->size = ((((orig) + (padb / 8))) + 8);
 	context->msg = (ft_uchar *)malloc(sizeof(ft_uchar) * context->size);
@@ -127,7 +124,27 @@ int			md5_pad_msg(t_md5_ctx *context, int bitlen, ft_uchar *d)
 	return (1);
 }
 
-ft_uchar		*ft_md5(const ft_uchar *d, unsigned long n, ft_uchar *md)
+void			ft_ssl_print_bits(t_md5_ctx *context)
+{
+	int	i;
+
+	i = 0;
+	while (i < context->size)
+	{
+		ft_printf("%10b ", context->msg[i]);
+		i++;
+		if ((i % 8) == 0 && i != 0)
+			ft_printf("\n");
+	}
+}
+
+void	md5_final(ft_uchar digest[16], t_md5_ctx *context)
+{
+	ft_printf("Padded message\n");
+	ft_ssl_print_bits(context);
+}
+
+unsigned char		*ft_md5(const ft_uchar *d, ft_ulong n, ft_uchar *md)
 {
 	t_md5_ctx		context;
 	unsigned int	i;
@@ -136,12 +153,7 @@ ft_uchar		*ft_md5(const ft_uchar *d, unsigned long n, ft_uchar *md)
 	if (!md5_init(&context))
 		return (NULL);
 	md5_pad_msg(&context, ft_strlen((char *)d), (ft_uchar *)d);
-	while (i < context.size)
-	{
-		ft_printf("%10b ", context.msg[i]);
-		i++;
-		if ((i % 8) == 0 && i != 0)
-			ft_printf("\n");
-	}
+	md5_update(&context, context.msg, context.size);
+	md5_final(context.digest, &context);
 	return (md);
 }
