@@ -6,7 +6,7 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/02 10:28:18 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/10/04 16:32:24 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/10/04 20:38:57 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,24 +26,7 @@ void		init_table(t_md5_ctx *md5)
 
 void		md5_update(t_md5_ctx *context, ft_uchar *input, ft_ulong mlen)
 {
-	ft_ulong	t;
-	ft_uchar	*p;
-
-	t = context->i[0];
-	if ((context->i[0] = (t + ((ft_ulong)mlen << 3))) < t)
-	{
-		context->i[1]++;
-		context->i[1] += mlen >> 29;
-	}
-	t = (t >> 3) & 0x3f;
-	if (t)
-		*p = *((ft_uchar *)context->in + t);
-	t = 64 - t;
-	if (mlen < t)
-	{
-		ft_memcpy(p, input, mlen);
-		return ;
-	}
+	
 }
 
 int			md5_init(t_md5_ctx *context)

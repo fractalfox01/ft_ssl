@@ -6,7 +6,7 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/23 19:22:06 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/10/04 16:54:32 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/10/04 20:35:31 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,7 +151,7 @@ void	read_and_parse(t_getopt *glb_opt, char **av, ft_uchar md[], int i)
 	{
 		msg = read_from_stdin(glb_opt);
 		if (!(ft_strchr((const char *)glb_opt->flag, 'q')))
-			ft_printf("MD5 (%s) = ", av[i]);
+			ft_printf("%s\n", msg);
 		ft_md5((const ft_uchar *)msg, ft_strlen((char *)msg), (ft_uchar *)&md);
 	}
 	else
