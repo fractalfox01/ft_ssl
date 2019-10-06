@@ -31,7 +31,37 @@
 
 # define DEBUG 0
 
-# define A0(x, y, z)()
+# define F(x, y, z) (((x) & (y)) | ((~x) & (z)))
+# define G(x, y, z) (((x) & (z)) | ((y) & (~z)))
+# define H(x, y, z) ((x) ^ (y) ^ (z))
+# define I(x, y, z) ((y) ^ ((x) | (~z)))
+
+# define ROTATE_LEFT(x, n) (((x) << (n)) | ((x) >> (32-(n))))
+
+/*
+** Transformations for rounds 1 2 3 and 4
+*/
+
+# define FF(a, b, c, d, x, s, ac) { \
+	(a) += F ((b), (c), (d)) + (x) + (ft_u4)(ac); \
+	(a) = ROTATE_LEFT ((a), (s)); \
+	(a) += (b); \
+}
+#define GG(a, b, c, d, x, s, ac) { \
+	(a) += G ((b), (c), (d)) + (x) + (ft_u4)(ac); \
+	(a) = ROTATE_LEFT ((a), (s)); \
+	(a) += (b); \
+}
+#define HH(a, b, c, d, x, s, ac) { \
+	(a) += H ((b), (c), (d)) + (x) + (ft_u4)(ac); \
+	(a) = ROTATE_LEFT ((a), (s)); \
+	(a) += (b); \
+}
+#define II(a, b, c, d, x, s, ac) { \
+	(a) += I ((b), (c), (d)) + (x) + (ft_u4)(ac); \
+	(a) = ROTATE_LEFT ((a), (s)); \
+	(a) += (b); \
+}
 
 typedef struct	s_ft_getopt
 {
@@ -47,13 +77,17 @@ typedef struct	s_ft_getopt
 typedef struct	s_ft_md5
 {
 	ft_u8		i[2];
+	ft_u4		state[4];
 	ft_u8		buf[4];
+	ft_u4		count[2];
 	ft_u1		in[64];
+	ft_u4		kspc[64];
 	ft_u1		digest[16];
 	ft_u2		rps1[4];
 	ft_u2		rps2[4];
 	ft_u2		rps3[4];
 	ft_u2		rps4[4];
+	ft_u2		*rots[4];
 	ft_u1		*msg;
 	ft_u4		size;
 }               t_md5_ctx;

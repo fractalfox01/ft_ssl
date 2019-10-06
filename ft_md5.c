@@ -6,25 +6,13 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/02 10:28:18 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/10/04 21:24:10 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/10/06 10:39:12 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ssl.h"
 
-void		init_table(t_md5_ctx *md5)
-{
-	int	i;
-
-	i = 0;
-	while (i < 64)
-	{
-		md5->in[i] = floor((ft_power(2, 32) * ft_abs(sin(i + 1))));
-		i++;
-	}
-}
-
-void	calck_md5_sine(ft_u1 in[64])
+void	calck_md5_sine(ft_u4 kspc[64])
 {
 	double	s;
 	double	pwr;
@@ -35,7 +23,7 @@ void	calck_md5_sine(ft_u1 in[64])
 	while (i < 64)
 	{
 		s = fabs(sin(1 + i));
-		in[i] = (ft_u4)(s * pwr);
+		kspc[i] = (ft_u4)(s * pwr);
 		i++;
 	}
 }
@@ -58,11 +46,53 @@ void	set_rps(t_md5_ctx *context)
 	context->rps4[1] = 12;
 	context->rps4[2] = 17;
 	context->rps4[3] = 22;
+	context->rots[0] = context->rps1;
+	context->rots[1] = context->rps2;
+	context->rots[2] = context->rps3;
+	context->rots[3] = context->rps4;
+}
+
+void		md5transform(ft_u4 *state, ft_u8 *buf)
+{
+
 }
 
 void		md5_update(t_md5_ctx *context, ft_u1 *input, ft_u8 mlen)
 {
-	calck_md5_sine(context->in);
+	ft_u4	i;
+	ft_u4	index;
+	ft_u4	partlen;
+
+	i = 0;
+	index = (ft_u4)(context->count[0] >> 3) & 63;
+	context->count[0] += (ft_u4)(mlen << 3);
+	if (context->count[0] < (ft_u4)(mlen << 3))
+		context->count[1]++;
+	context->count[1] += (ft_u4)(mlen >> 29);
+	partlen = 64 - index;
+	if (mlen >= partlen)
+	{
+		ft_memcpy((void *)context->buf, input, partlen);
+		md5transform(context->state, context->buf);
+		while ((i + 63) < mlen)
+		{
+			md5transform(context->state, context->buf);
+			i += 64;
+		}
+		index = 0;
+	}
+	else
+	{
+		i = 0;
+		ft_memcpy((void *)context->buf[index], (void *)input, mlen - i);
+	}
+}
+
+void		init_table(t_md5_ctx *context)
+{
+	context->count[0] = 0;
+	context->count[1] = 0;
+	calck_md5_sine(context->kspc);
 	set_rps(context);
 }
 
@@ -75,10 +105,10 @@ int			md5_init(t_md5_ctx *context)
 	{
 		ft_memset((void *)context->in, 0, 64);
 		init_table(context);
-		context->buf[0] = 0x67452301;
-		context->buf[1] = 0xefcdab89;
-		context->buf[2] = 0x98badcfe;
-		context->buf[3] = 0x10325476;
+		context->state[0] = 0x67452301;
+		context->state[1] = 0xefcdab89;
+		context->state[2] = 0x98badcfe;
+		context->state[3] = 0x10325476;
 		context->i[0] = 0;
 		context->i[1] = 0;
 		while (i < 16)
@@ -172,6 +202,7 @@ void	md5_final(ft_u1 digest[16], t_md5_ctx *context)
 {
 	ft_printf("Padded message\n");
 	ft_ssl_print_bits(context);
+
 }
 
 unsigned char		*ft_md5(const ft_u1 *d, ft_u8 n, ft_u1 *md)
