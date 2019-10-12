@@ -6,11 +6,11 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/23 19:22:06 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/10/04 20:49:03 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/10/10 22:23:43 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_ssl.h"
+#include "../includes/ft_ssl.h"
 
 void	ft_opt_init(t_getopt *glb_opt)
 {
@@ -18,9 +18,11 @@ void	ft_opt_init(t_getopt *glb_opt)
 	glb_opt->c = 0;
 	glb_opt->i = 1;
 	glb_opt->chunk = NULL;
-	glb_opt->message = ft_strdup(" ");
-	glb_opt->ft_md5 = (ft_u1 *)ft_strdup("md5");
-	glb_opt->ft_sha256 = (ft_u1 *)ft_strdup("sha256");
+	glb_opt->message = (unsigned char *)malloc(sizeof(unsigned char) * 2);
+	glb_opt->message[0] = '\0';
+	glb_opt->message[1] = '\0';
+	glb_opt->ft_md5 = (unsigned char *)ft_strdup("md5");
+	glb_opt->ft_sha256 = (unsigned char *)ft_strdup("sha256");
 }
 
 int	ssl_set_flag(t_getopt *glb_opt, char *s)
@@ -62,9 +64,9 @@ int		ft_getopt(int ac, char **av, t_getopt *glb_opt)
 	{
 		if (ssl_set_flag(glb_opt, av[1]) == 0)
 			return (-1);
-		if (ft_ustrcmp((const ft_u1 *)av[2], glb_opt->ft_md5) == 0)
+		if (ft_ustrcmp((const unsigned char *)av[2], glb_opt->ft_md5) == 0)
 			return (0);
-		if (ft_ustrcmp((const ft_u1 *)av[2], glb_opt->ft_sha256) == 0)
+		if (ft_ustrcmp((const unsigned char *)av[2], glb_opt->ft_sha256) == 0)
 			return (1);
 	}
 	else if (ac == 3)
@@ -73,13 +75,13 @@ int		ft_getopt(int ac, char **av, t_getopt *glb_opt)
 		{
 			if (!(!(ft_strchr((const char *)glb_opt->flag, 'p'))))
 			{
-				if (ft_ustrcmp((const ft_u1 *)av[2], glb_opt->ft_md5) == 0)
+				if (ft_ustrcmp((const unsigned char *)av[2], glb_opt->ft_md5) == 0)
 					return (0);
 			}
 		}
-		if (ft_ustrcmp((const ft_u1 *)av[1], glb_opt->ft_md5) == 0)
+		if (ft_ustrcmp((const unsigned char *)av[1], glb_opt->ft_md5) == 0)
 			return (0);
-		if (ft_ustrcmp((const ft_u1 *)av[1], glb_opt->ft_sha256) == 0)
+		if (ft_ustrcmp((const unsigned char *)av[1], glb_opt->ft_sha256) == 0)
 			return (1);
 	}
 	return (-1);
@@ -143,7 +145,7 @@ char	*try_open(t_getopt *glb_opt, char *file)
 	return (NULL);
 }
 
-void	read_and_parse(t_getopt *glb_opt, char **av, ft_u1 md[], int i)
+void	read_and_parse(t_getopt *glb_opt, char **av, unsigned char md[], int i)
 {
 	char	*msg;
 
@@ -152,7 +154,7 @@ void	read_and_parse(t_getopt *glb_opt, char **av, ft_u1 md[], int i)
 		msg = read_from_stdin(glb_opt);
 		if (!(ft_strchr((const char *)glb_opt->flag, 'q')))
 			ft_printf("%s\n", msg);
-		ft_md5((const ft_u1 *)msg, ft_strlen((char *)msg), (ft_u1 *)&md);
+		ft_md5((const unsigned char *)msg, ft_strlen((char *)msg), (unsigned char *)&md);
 	}
 	else
 	{
@@ -160,20 +162,20 @@ void	read_and_parse(t_getopt *glb_opt, char **av, ft_u1 md[], int i)
 		{
 			if (!(ft_strchr((const char *)glb_opt->flag, 'q')))
 				ft_printf("%s\n", msg);
-			ft_md5((const ft_u1 *)msg, ft_strlen(msg), (ft_u1 *)&md);
+			ft_md5((const unsigned char *)msg, ft_strlen(msg), (unsigned char *)&md);
 		}
 		else
 		{
 			if (!(ft_strchr((const char *)glb_opt->flag, 'q')))
 				ft_printf("%s\n", av[i]);
-			ft_md5((ft_u1 *)av[i], ft_strlen(av[i]), (ft_u1 *)&md);
+			ft_md5((unsigned char *)av[i], ft_strlen(av[i]), (unsigned char *)&md);
 		}
 	}
 }
 
 void	ft_ssl_preform_action(t_getopt *glb_opt, int ac, char **av)
 {
-	ft_u1	md[ft_strlen(av[2])];
+	unsigned char	md[ft_strlen(av[2])];
 	int			i;
 	int			a;
 

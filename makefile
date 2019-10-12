@@ -2,7 +2,7 @@ NAME= ft_ssl
 
 FLAGS= -Wall -Werror -Wextra
 
-SRC= $(addsuffix .c, ft_ssl_utils ft_md5 main)
+SRC= $(addsuffix .c, utils/ft_ssl_utils crypto/md5/ft_md5 crypto/md5/md5_padding main)
 
 $(NAME):
 	@echo "\033[0;32mBuilding FT_SSL Program\033[0m"
@@ -26,7 +26,7 @@ fc: fclean
 re: fc all
 
 debug: fc
-	@echo "\033[0;32mBuilding FT_SSL \033[0;34mDEBUG MODE\033[0m"
+	@echo "\033[0;32mBuilding FT_SSL \033[0;35mDEBUG MODE\033[0m"
 	@make -C libft
 	@$(CC) -g $(SRC) libft/libft.a -o ft_ssl_debug
 
