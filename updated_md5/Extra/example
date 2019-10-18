@@ -1,8 +1,4 @@
 /*
-** Awesome implementation: https://github.com/katolikyan/OpenSSL
-*/
-
-/*
 ** Copied from https://stackoverflow.com/questions/24479760/implementation-of-md5-in-c
 */
 

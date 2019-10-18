@@ -6,7 +6,7 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/02 10:28:18 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/10/12 13:04:55 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/10/12 11:37:57 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,16 +177,16 @@ void		md5_update(t_md5_ctx *context, unsigned char *input, unsigned long mlen)
 		while ((i) < mlen)
 		{
 			md5_rounds(&transform, context, context->state, (context->msg + i));
-			context->state[0] += transform.a;
-			context->state[1] += transform.b;
-			context->state[2] += transform.c;
-			context->state[3] += transform.d;
 			i += 64;
 		}
 		index = 0;
 	}
 	else
 		ft_memcpy((void *)context->buf[index], (void *)input, mlen - i);
+	context->state[0] += transform.a;
+	context->state[1] += transform.b;
+	context->state[2] += transform.c;
+	context->state[3] += transform.d;
 }
 
 void		init_table(t_md5_ctx *context)
@@ -201,21 +201,9 @@ int			md5_init(t_md5_ctx *context)
 	i = 0;
 	ft_bzero((void *)context->buffer, 64);
 	ft_bzero((void *)context->count, 2);
-	context->i[0] = 0;
-	context->i[1] = 0;
-	ft_bzero((void *)context->digest, 16);
-	ft_bzero((void *)context->in, 64);
-	ft_bzero((void *)context->kspc, 64);
-	ft_bzero((void *)context->rots, 4);
-	ft_bzero((void *)context->rps1, 4);
-	ft_bzero((void *)context->rps2, 4);
-	ft_bzero((void *)context->rps3, 4);
-	ft_bzero((void *)context->rps4, 4);
-	context->size = 0;
-	context->state[0] = 0x67452301;
-	context->state[1] = 0xefcdab89;
-	context->state[2] = 0x98badcfe;
-	context->state[3] = 0x10325476;
+	ft_bzero((void *)context->i, 2);
+	// still needs to finish initializing all the values...
+	// Whyyyyyyyyyyyyy!?
 	return (1);
 }
 
