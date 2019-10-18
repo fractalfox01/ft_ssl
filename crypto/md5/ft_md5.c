@@ -6,7 +6,7 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/02 10:28:18 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/10/12 13:04:55 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/10/18 15:44:02 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -245,9 +245,10 @@ void		md5_final(unsigned char digest[16], t_md5_ctx *context)
 **  final is a right >> left << shift leaving 8 bits remaining
 */
 
-unsigned char		*ft_md5(const unsigned char *d, unsigned long n, unsigned char *md)
+unsigned char		*ft_md5(const unsigned char *d, unsigned long n)
 {
 	t_md5_ctx		context;
+	unsigned char	*md;
 	unsigned int	i;
 
 	i = 0;
@@ -255,8 +256,8 @@ unsigned char		*ft_md5(const unsigned char *d, unsigned long n, unsigned char *m
 		return (NULL);
 	md5_pad_msg(&context, ft_strlen((char *)d), (unsigned char *)d);
 	ft_ssl_print_bits(&context);
-	md5_update(&context, context.msg, context.size);
-	md5_final(context.digest, &context);
+	// md5_update(&context, context.msg, context.size);
+	// md5_final(context.digest, &context);
 	// ft_printf("thiers: ");
 	// system("md5 fox.txt");
 	// ft_printf("\n");

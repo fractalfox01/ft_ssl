@@ -2,7 +2,7 @@ NAME= ft_ssl
 
 FLAGS= -Wall -Werror -Wextra
 
-SRC= $(addsuffix .c, utils/ft_ssl_utils crypto/md5/ft_md5 crypto/md5/md5_padding main)
+SRC= $(addsuffix .c, utils/ft_ssl_utils utils/ft_ssl_getoptions crypto/md5/ft_md5 crypto/md5/md5_padding main)
 
 $(NAME):
 	@echo "\033[0;32mBuilding FT_SSL Program\033[0m"

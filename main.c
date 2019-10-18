@@ -6,23 +6,44 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/21 22:31:46 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/10/10 17:34:36 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/10/18 15:51:09 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/ft_ssl.h"
 
+t_opt	*ft_ssl_parse_options(t_getopt *glb_opt, int ac, char **av)
+{
+	t_opt		*opt;
+	int			a;
+	ft_opt_init(glb_opt);
+	opt = glb_opt->opt;
+	if ((a = ft_getopt(ac, av, glb_opt)) == 0)
+	{
+		if (glb_opt->opt_choice == 0)
+			ft_printf("usage: ft_ssl command [command opts] [command args]\n");
+		else
+			ft_printf("Bad ssl option\n");
+		return (NULL);
+	}
+	return (opt);
+}
+
 int		main(int ac, char **av)
 {
-	t_getopt glb_opt;
+	t_getopt	glb_opt;
+	t_opt		*opt;
+	int			a;
 
-	if (ac == 3 || ac == 4)
+	if (ac >= 3)
 	{
-
-		ft_opt_init(&glb_opt);
-		glb_opt.c = ft_getopt(ac, av, &glb_opt);
-		ft_ssl_preform_action(&glb_opt, ac, av);
-		ft_ssl_free_optins(&glb_opt);
+		opt = ft_ssl_parse_options(&glb_opt, ac, av);
+		while (opt->message)
+		{
+			ft_ssl_preform_action(&glb_opt, opt, ac, av);
+			opt = opt->next;
+		}
+		//ft_ssl_free_optins(&glb_opt);
 	}
 	else
 	{

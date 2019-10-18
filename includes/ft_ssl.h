@@ -25,20 +25,13 @@
 ** BUF_SIZE used for get_n_char in ft_ssl_preform_action
 */
 
-#  define BUF_SIZE 64
+#  define BUF_SIZE		64
 
 # endif
 
-# define DEBUG 0
-
-typedef struct	s_transform
-{
-	unsigned int		a;
-	unsigned int		b;
-	unsigned int		c;
-	unsigned int		d;
-	unsigned int		x[16];
-}				t_tf;
+# define DEBUG 			0
+# define SSL_MD5		"md5"
+# define SSL_SHA256		"sha256"
 
 # define F(x, y, z) (((x) & (y)) | ((~x) & (z)))
 # define G(x, y, z) (((x) & (z)) | ((y) & (~z)))
@@ -62,23 +55,32 @@ typedef struct	s_transform
 	a += b; \
 }
 
-#define GG(a, b, c, d, x, s, ac) { \
+# define GG(a, b, c, d, x, s, ac) { \
 	a += G(b, c, d) + x + (unsigned int)ac; \
 	a = ROTATE_LEFT(a, s); \
 	a += b; \
 }
 
-#define HH(a, b, c, d, x, s, ac) { \
+# define HH(a, b, c, d, x, s, ac) { \
 	a += H(b, c, d) + x + (unsigned int)ac; \
 	a = ROTATE_LEFT(a, s); \
 	a += b; \
 }
 
-#define II(a, b, c, d, x, s, ac) { \
+# define II(a, b, c, d, x, s, ac) { \
 	a += I(b, c, d) + x + (unsigned int)ac; \
 	a = ROTATE_LEFT(a, s); \
 	a += b; \
 }
+
+typedef struct		s_transform
+{
+	unsigned int	a;
+	unsigned int	b;
+	unsigned int	c;
+	unsigned int	d;
+	unsigned int	x[16];
+}					t_tf;
 
 typedef struct		s_md5_pad
 {
@@ -92,15 +94,27 @@ typedef struct		s_md5_pad
 	unsigned char	*p_msg;
 }					t_pad;
 
-typedef struct		s_ft_getopt
+typedef	struct		s_ft_opt
 {
 	unsigned char	*message;
+	unsigned char	chunk[64];
+	unsigned char	cmdarg[2];
+	struct s_ft_opt	*next;
+}					t_opt;
+
+
+typedef struct		s_ft_getopt
+{
+	int				success;
+	int				end;
+	int				skip;
 	char			*chunk;
-	char			flag[5];
-	int				i;
-	int				c;
-    unsigned char	*ft_md5;
-	unsigned char	*ft_sha256;
+	int				opt_total;
+	int				opt_i;
+	int				opt_choice;
+	int				opt_reverse;
+	int				opt_quiet;
+	t_opt			*opt;
 }					t_getopt;
 
 typedef struct		s_ft_md5
@@ -120,17 +134,23 @@ typedef struct		s_ft_md5
 	unsigned char	buffer[64];
 	unsigned char	*msg;
 	unsigned int	size;
+	unsigned char	*md;
 }               	t_md5_ctx;
 
 /*
 ** getopt functions
 */
 
-unsigned char		*ft_md5(const unsigned char*d, unsigned long n, unsigned char *md);
+unsigned char		*ft_md5(const unsigned char *d, unsigned long n);
 void				ft_ssl_message(char *invalid);
 void				ft_ssl_free_optins(t_getopt *glb_opt);
-void				ft_ssl_preform_action(t_getopt *glb_opt, int ac, char **av);
+void				ft_ssl_preform_action(t_getopt *glb_opt, t_opt *opt, int ac, char **av);
 int					ft_getopt(int ac, char **av, t_getopt *glb_opt);
+t_opt				*get_opt(t_getopt *glb_opt);
+t_opt				*newsslnode(void);
+t_opt				*get_opt(t_getopt *glb_opt);
+char				*read_from_stdin(t_getopt *glb_opt);
+char				*try_open(t_getopt *glb_opt, char *file);
 void				ft_opt_init(t_getopt *glb_opt);
 
 /*
