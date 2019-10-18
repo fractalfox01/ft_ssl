@@ -6,7 +6,7 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/23 19:22:06 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/10/17 19:56:33 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/10/18 14:25:49 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ t_opt	*newsslnode(void)
 void	ft_opt_init(t_getopt *glb_opt)
 {
 	glb_opt->success = 1;
+	glb_opt->end = 1;
 	glb_opt->skip = 0;
 	glb_opt->opt_choice = 0;
 	glb_opt->opt_total = 0;
@@ -64,7 +65,6 @@ char	*read_from_stdin(t_getopt *glb_opt)
 		ft_strdel(&glb_opt->chunk);
 	}
 	msg[ft_strlen(msg) - 1] = '\0';
-	close(0);
 	return (msg);
 }
 
@@ -78,7 +78,7 @@ char	*try_open(t_getopt *glb_opt, char *file)
 	fd = 0;
 	msg = ft_strnew(2);
 	fd = open(file, O_APPEND, O_RDONLY);
-	if (fd > 0)
+	if (fd >= 0)
 	{
 		while ((b = get_n_char(fd, &glb_opt->chunk, BUF_SIZE)) > 0)
 		{

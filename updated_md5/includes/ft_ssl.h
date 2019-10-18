@@ -106,6 +106,7 @@ typedef	struct		s_ft_opt
 typedef struct		s_ft_getopt
 {
 	int				success;
+	int				end;
 	int				skip;
 	char			*chunk;
 	int				opt_total;
@@ -147,7 +148,8 @@ int					ft_getopt(int ac, char **av, t_getopt *glb_opt);
 void				ft_opt_init(t_getopt *glb_opt);
 t_opt				*newsslnode(void);
 t_opt				*get_opt(t_getopt *glb_opt);
-
+char				*read_from_stdin(t_getopt *glb_opt);
+char				*try_open(t_getopt *glb_opt, char *file);
 /*
 ** MD5 padding functions
 */
