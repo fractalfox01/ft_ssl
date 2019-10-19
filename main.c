@@ -6,7 +6,7 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/21 22:31:46 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/10/18 15:51:09 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/10/18 16:16:16 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ int		main(int ac, char **av)
 		opt = ft_ssl_parse_options(&glb_opt, ac, av);
 		while (opt->message)
 		{
+			ft_printf("message: %s\n", opt->message);
 			ft_ssl_preform_action(&glb_opt, opt, ac, av);
 			opt = opt->next;
 		}

@@ -6,7 +6,7 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/23 19:22:06 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/10/18 15:45:59 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/10/18 18:41:16 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,8 @@ char	*read_from_stdin(t_getopt *glb_opt)
 	char	*msg;
 
 	b = 0;
-	msg = ft_strnew(2);
+	msg = ft_strnew(1);
+	msg[0] = '\0';
 	while ((b = get_n_char(0, &glb_opt->chunk, BUF_SIZE)) > 0)
 	{
 		msg = ft_strjoin(msg, glb_opt->chunk);
@@ -99,8 +100,9 @@ char	*try_open(t_getopt *glb_opt, char *file)
 	b = 0;
 	fd = 0;
 	msg = ft_strnew(2);
+	ft_printf("trying %s\n", file);
 	fd = open(file, O_APPEND, O_RDONLY);
-	if (fd > 0)
+	if (fd >= 0)
 	{
 		while ((b = get_n_char(fd, &glb_opt->chunk, BUF_SIZE)) > 0)
 		{
@@ -111,6 +113,7 @@ char	*try_open(t_getopt *glb_opt, char *file)
 		close(fd);
 		return (msg);
 	}
+	//close(fd);
 	return (NULL);
 }
 
