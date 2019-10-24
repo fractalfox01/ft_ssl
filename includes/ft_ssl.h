@@ -4,10 +4,8 @@
 # include <math.h>
 # include <fcntl.h>
 # include "../libft/libft.h"
-
-/*
- ** rps: specifies sround per shift
- */
+# include "ft_md5.h"
+# include "ft_sha256.h"
 
 /*
  ** You are allowed the following functions:
@@ -18,6 +16,9 @@
  **    ◦malloc
  **    ◦free
  */
+
+# define ROTATE_LEFT(x, n) (((x) << (n)) | ((x) >> (32-(n))))
+# define ROTATE_RIGHT(x, n) (((x) >> (n)) | ((x) << (32-(n))))
 
 # ifndef BUF_SIZE
 
@@ -33,45 +34,9 @@
 # define SSL_MD5		"md5"
 # define SSL_SHA256		"sha256"
 
-# define F(x, y, z) (((x) & (y)) | ((~x) & (z)))
-# define G(x, y, z) (((x) & (z)) | ((y) & (~z)))
-# define H(x, y, z) ((x) ^ (y) ^ (z))
-# define I(x, y, z) ((y) ^ ((x) | (~z)))
-
-// # define F(b,c,d)        ((((c) ^ (d)) & (b)) ^ (d))
-// # define G(b,c,d)        ((((b) ^ (c)) & (d)) ^ (c))
-// # define H(b,c,d)        ((b) ^ (c) ^ (d))
-// # define I(b,c,d)        (((~(d)) | (b)) ^ (c))
-
-# define ROTATE_LEFT(x, n) (((x) << (n)) | ((x) >> (32-(n))))
-
 /*
 ** Transformations for rounds 1 2 3 and 4
 */
-
-# define FF(a, b, c, d, x, s, ac) { \
-	a += F(b, c, d) + x + (unsigned int)ac; \
-	a = ROTATE_LEFT(a, s); \
-	a += b; \
-}
-
-# define GG(a, b, c, d, x, s, ac) { \
-	a += G(b, c, d) + x + (unsigned int)ac; \
-	a = ROTATE_LEFT(a, s); \
-	a += b; \
-}
-
-# define HH(a, b, c, d, x, s, ac) { \
-	a += H(b, c, d) + x + (unsigned int)ac; \
-	a = ROTATE_LEFT(a, s); \
-	a += b; \
-}
-
-# define II(a, b, c, d, x, s, ac) { \
-	a += I(b, c, d) + x + (unsigned int)ac; \
-	a = ROTATE_LEFT(a, s); \
-	a += b; \
-}
 
 typedef struct		s_transform
 {
@@ -144,7 +109,7 @@ typedef struct 		s_md5_glb
 ** getopt functions
 */
 
-unsigned char		*ft_md5_pre(const unsigned char *d);
+unsigned char		*ft_md5(const unsigned char *d);
 void				ft_ssl_message(char *invalid);
 void				ft_ssl_free_optins(t_getopt *glb_opt);
 void				ft_ssl_preform_action(t_getopt *glb_opt, t_opt *opt);

@@ -6,7 +6,7 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/23 19:22:06 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/10/23 19:40:32 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/10/23 19:54:35 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,6 @@ void	ft_ssl_preform_action(t_getopt *glb_opt, t_opt *opt)
 {
 	if (glb_opt->opt_choice == 1)
 	{
-		ft_md5_pre(opt->message);
+		ft_md5(opt->message);
 	}
 }

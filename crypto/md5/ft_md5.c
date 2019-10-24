@@ -6,11 +6,12 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/02 10:28:18 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/10/23 19:38:38 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/10/23 20:00:36 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/ft_ssl.h"
+#include "../../includes/ft_md5.h"
 
 void	ft_md5_round1(unsigned int state[4], unsigned int x[16])
 {
@@ -92,21 +93,6 @@ void	ft_md5_round4(unsigned int state[4], unsigned int x[16])
 	II(state[1], state[2], state[3], state[0], x[9], 21, 0xeb86d391);
 }
 
-// void		md5transform(t_md5_ctx *context, unsigned int *state, unsigned char *buf)
-// {
-	
-// }
-
-// void		show_me_kspc(unsigned int *kspc)
-// {
-// 	int	i = 0;
-
-// 	while (i < 64)
-// 	{
-// 		ft_printf("k[i] %x\n", kspc[i++]);
-// 	}
-// }
-
 void	md5_clearout(t_md5_ctx *context)
 {
 	context->a = 0;
@@ -152,26 +138,6 @@ void		md5_final(unsigned char digest[16], t_md5_ctx *context)
 	ft_memset(context, 0, sizeof(context));
 }
 
-void	set_rps(t_md5_ctx *context)
-{
-	context->rps1[0] = 7;
-	context->rps1[1] = 12;
-	context->rps1[2] = 17;
-	context->rps1[3] = 22;
-	context->rps2[0] = 5;
-	context->rps2[1] = 9;
-	context->rps2[2] = 14;
-	context->rps2[3] = 20;
-	context->rps3[0] = 4;
-	context->rps3[1] = 11;
-	context->rps3[2] = 16;
-	context->rps3[3] = 23;
-	context->rps4[0] = 6;
-	context->rps4[1] = 10;
-	context->rps4[2] = 15;
-	context->rps4[3] = 21;
-}
-
 void	md5_init(t_md5_ctx *context)
 {
 	int	i;
@@ -190,18 +156,7 @@ void	md5_init(t_md5_ctx *context)
 	i = 0;
 	while (i < 64)
 		context->buf[i++] = '\0';
-	//set_rps(context);
 }
-
-/*
-**  Md5_pad_msg takes in the sent message to be hashed and pads it off
-**  into a 488 mod 512 bit format
-**  with the last 64 bits representing the length of the original message.
-**  The following code from below:  a = ((((orig * 8) + padb)) + 64); is the
-**  total size (in bits) needed for p_msg
-**  The while loop update last 64 bits with totat bits in original message
-**  final is a right >> left << shift leaving 8 bits remaining
-*/
 
 void	md5_decode(unsigned int output[16], unsigned char *input, unsigned int len)
 {
@@ -273,7 +228,7 @@ void		md5_update(t_md5_ctx *context, unsigned char *input, unsigned long mlen)
 	ft_memcpy((unsigned char *)(context->buf + index), (unsigned char *)(input + i), mlen - i);
 }
 
-unsigned char		*ft_md5_pre(const unsigned char *d)
+unsigned char		*ft_md5(const unsigned char *d)
 {
 	t_md5_ctx		context;
 	unsigned char	md[16];
