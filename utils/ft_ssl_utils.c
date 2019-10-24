@@ -6,7 +6,7 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/23 19:22:06 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/10/23 15:53:00 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/10/23 19:40:32 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,6 @@ unsigned char	*read_from_stdin(t_getopt *glb_opt)
 		msg = ft_ustrjoin(msg, glb_opt->chunk);
 		ft_ustrdel(&glb_opt->chunk);
 	}
-	msg[ft_ustrlen(msg) - 1] = '\0';
 	close(0);
 	return (msg);
 }
@@ -109,7 +108,6 @@ unsigned char	*try_open(t_getopt *glb_opt, unsigned char *file)
 			msg = ft_ustrjoin(msg, glb_opt->chunk);
 			ft_ustrdel(&glb_opt->chunk);
 		}
-		msg[ft_ustrlen(msg) - 1] = '\0';
 		close(fd);
 		return (msg);
 	}
