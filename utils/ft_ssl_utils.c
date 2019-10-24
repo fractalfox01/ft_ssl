@@ -6,7 +6,7 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/23 19:22:06 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/10/18 18:41:16 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/10/23 15:53:00 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,43 +73,43 @@ void	ft_ssl_message(char *invalid)
 	ft_printf(FT_END_ATTR);
 }
 
-char	*read_from_stdin(t_getopt *glb_opt)
+unsigned char	*read_from_stdin(t_getopt *glb_opt)
 {
-	int		b;
-	char	*msg;
+	int				b;
+	unsigned char	*msg;
 
 	b = 0;
-	msg = ft_strnew(1);
+	msg = ft_ustrnew(1);
 	msg[0] = '\0';
 	while ((b = get_n_char(0, &glb_opt->chunk, BUF_SIZE)) > 0)
 	{
-		msg = ft_strjoin(msg, glb_opt->chunk);
-		ft_strdel(&glb_opt->chunk);
+		msg = ft_ustrjoin(msg, glb_opt->chunk);
+		ft_ustrdel(&glb_opt->chunk);
 	}
-	msg[ft_strlen(msg) - 1] = '\0';
+	msg[ft_ustrlen(msg) - 1] = '\0';
 	close(0);
 	return (msg);
 }
 
-char	*try_open(t_getopt *glb_opt, char *file)
+unsigned char	*try_open(t_getopt *glb_opt, unsigned char *file)
 {
-	int			b;
-	int			fd;
-	char		*msg;
+	int				b;
+	int				fd;
+	unsigned char	*msg;
 
 	b = 0;
 	fd = 0;
-	msg = ft_strnew(2);
-	ft_printf("trying %s\n", file);
-	fd = open(file, O_APPEND, O_RDONLY);
+	msg = ft_ustrnew(1);
+	// ft_printf("trying %s\n", file);
+	fd = open((const char *)file, O_APPEND, O_RDONLY);
 	if (fd >= 0)
 	{
 		while ((b = get_n_char(fd, &glb_opt->chunk, BUF_SIZE)) > 0)
 		{
-			msg = ft_strjoin(msg, glb_opt->chunk);
-			ft_strdel(&glb_opt->chunk);
+			msg = ft_ustrjoin(msg, glb_opt->chunk);
+			ft_ustrdel(&glb_opt->chunk);
 		}
-		msg[ft_strlen(msg) - 1] = '\0';
+		msg[ft_ustrlen(msg) - 1] = '\0';
 		close(fd);
 		return (msg);
 	}
@@ -117,10 +117,10 @@ char	*try_open(t_getopt *glb_opt, char *file)
 	return (NULL);
 }
 
-void	ft_ssl_preform_action(t_getopt *glb_opt, t_opt *opt, int ac, char **av)
+void	ft_ssl_preform_action(t_getopt *glb_opt, t_opt *opt)
 {
 	if (glb_opt->opt_choice == 1)
 	{
-		ft_md5(opt->message, ft_strlen((char *)opt->message));
+		ft_md5_pre(opt->message);
 	}
 }

@@ -7,7 +7,7 @@ SRC= $(addsuffix .c, utils/ft_ssl_utils utils/ft_ssl_getoptions crypto/md5/ft_md
 $(NAME):
 	@echo "\033[0;32mBuilding FT_SSL Program\033[0m"
 	@make -C libft
-	@$(CC) $(SRC) libft/libft.a -o $(NAME)
+	@$(CC) $(FLAGS) $(SRC) libft/libft.a -o $(NAME)
 
 all: $(NAME)
 
@@ -28,6 +28,6 @@ re: fc all
 debug: fc
 	@echo "\033[0;32mBuilding FT_SSL \033[0;35mDEBUG MODE\033[0m"
 	@make -C libft
-	@$(CC) -g $(SRC) libft/libft.a -o ft_ssl_debug
+	@$(CC) -g $(FLAGS) $(SRC) libft/libft.a -o ft_ssl_debug
 
 .PHONY: clean fclean fc re main.c ft_ssl

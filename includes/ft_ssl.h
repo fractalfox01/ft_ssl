@@ -50,7 +50,7 @@
 */
 
 # define FF(a, b, c, d, x, s, ac) { \
-	a += F(a, c, d) + x + (unsigned int)ac; \
+	a += F(b, c, d) + x + (unsigned int)ac; \
 	a = ROTATE_LEFT(a, s); \
 	a += b; \
 }
@@ -108,7 +108,7 @@ typedef struct		s_ft_getopt
 	int				success;
 	int				end;
 	int				skip;
-	char			*chunk;
+	unsigned char	*chunk;
 	int				opt_total;
 	int				opt_i;
 	int				opt_choice;
@@ -119,45 +119,50 @@ typedef struct		s_ft_getopt
 
 typedef struct		s_ft_md5
 {
-	unsigned long	i[2];
+	unsigned int	a;
+	unsigned int	b;
+	unsigned int	c;
+	unsigned int	d;
+	unsigned char	*msg;
 	unsigned int	state[4];
-	unsigned long	buf[4];
 	unsigned int	count[2];
-	unsigned char	in[64];
-	unsigned int	kspc[64];
-	unsigned char	digest[16];
+	unsigned char	buf[64];
 	unsigned short	rps1[4];
 	unsigned short	rps2[4];
 	unsigned short	rps3[4];
 	unsigned short	rps4[4];
-	unsigned short	*rots[4];
-	unsigned char	buffer[64];
-	unsigned char	*msg;
-	unsigned int	size;
-	unsigned char	*md;
 }               	t_md5_ctx;
+
+typedef struct 		s_md5_glb
+{
+	int				size;
+	unsigned char	*msg;
+}					t_md5_glb;
+
 
 /*
 ** getopt functions
 */
 
-unsigned char		*ft_md5(const unsigned char *d, unsigned long n);
+unsigned char		*ft_md5_pre(const unsigned char *d);
 void				ft_ssl_message(char *invalid);
 void				ft_ssl_free_optins(t_getopt *glb_opt);
-void				ft_ssl_preform_action(t_getopt *glb_opt, t_opt *opt, int ac, char **av);
+void				ft_ssl_preform_action(t_getopt *glb_opt, t_opt *opt);
 int					ft_getopt(int ac, char **av, t_getopt *glb_opt);
 t_opt				*get_opt(t_getopt *glb_opt);
 t_opt				*newsslnode(void);
 t_opt				*get_opt(t_getopt *glb_opt);
-char				*read_from_stdin(t_getopt *glb_opt);
-char				*try_open(t_getopt *glb_opt, char *file);
+unsigned char		*read_from_stdin(t_getopt *glb_opt);
+unsigned char		*try_open(t_getopt *glb_opt, unsigned char *file);
 void				ft_opt_init(t_getopt *glb_opt);
 
 /*
 ** MD5 padding functions
 */
 
+void				md5_update(t_md5_ctx *context, unsigned char *input, unsigned long mlen);
 int					md5_pad_msg(t_md5_ctx *context, int bitlen, unsigned char*d);
-void				ft_ssl_print_bits(t_md5_ctx *context);
+void				ft_ssl_print_bits(unsigned char *msg, int size);
+void				md5_decode(unsigned int *output, unsigned char *input, unsigned int len);
 
 #endif
