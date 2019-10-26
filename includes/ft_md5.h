@@ -1,6 +1,10 @@
 #ifndef FT_MD5_H
 #define FT_MD5_H
 
+# ifndef ROT_L
+#  define ROT_L(x, n) (((x) << (n)) | ((x) >> (32-(n))))
+# endif
+
 # define F(x, y, z) (((x) & (y)) | ((~x) & (z)))
 # define G(x, y, z) (((x) & (z)) | ((y) & (~z)))
 # define H(x, y, z) ((x) ^ (y) ^ (z))
@@ -51,6 +55,15 @@ typedef struct 		s_md5_glb
 	int				size;
 	unsigned char	*msg;
 }					t_md5_glb;
+
+typedef struct		s_transform
+{
+	unsigned int	a;
+	unsigned int	b;
+	unsigned int	c;
+	unsigned int	d;
+	unsigned int	x[16];
+}					t_tf;
 
 /*
 ** MD5 padding functions

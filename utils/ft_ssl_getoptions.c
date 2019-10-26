@@ -6,7 +6,7 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/18 15:03:38 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/10/20 20:44:11 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/10/24 15:56:23 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,12 @@
 
 void	ft_ssl_get_type(char *type, t_getopt *glb_opt)
 {
-	if (ft_strcmp(type, SSL_MD5) == 0)
+	if (ft_strcmp(type, "md5") == 0)
 		glb_opt->opt_choice = 1;
 	else if (ft_strcmp(type, "sha256") == 0)
 		glb_opt->opt_choice = 2;
+	else if (ft_strcmp(type, "sha224") == 0)
+		glb_opt->opt_choice = 3;
 	else
 		glb_opt->success = 0;
 }

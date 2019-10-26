@@ -17,35 +17,13 @@
  **    ◦free
  */
 
-# define ROT_L(x, n) (((x) << (n)) | ((x) >> (32-(n))))
-# define ROT_R(x, n) (((x) >> (n)) | ((x) << (32-(n))))
-
-# ifndef BUF_SIZE
-
 /*
 ** BUF_SIZE used for get_n_char in ft_ssl_preform_action
 */
 
+# ifndef BUF_SIZE
 #  define BUF_SIZE		64
-
 # endif
-
-# define DEBUG 			0
-# define SSL_MD5		"md5"
-# define SSL_SHA256		"sha256"
-
-/*
-** Transformations for rounds 1 2 3 and 4
-*/
-
-typedef struct		s_transform
-{
-	unsigned int	a;
-	unsigned int	b;
-	unsigned int	c;
-	unsigned int	d;
-	unsigned int	x[16];
-}					t_tf;
 
 typedef struct		s_md5_pad
 {
