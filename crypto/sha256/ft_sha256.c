@@ -6,7 +6,7 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/24 10:29:59 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/10/26 12:27:23 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/10/26 16:53:26 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,12 +140,22 @@ void	k_set(uint32_t k[64])
 
 int			ft_sha224_256init(t_sha224_256_ctx *ctx, int sha_type, uint8_t *msg)
 {
+	int	i;
+
+	i = 0;
 	if (ctx && sha_type)
 	{
+		while (i < 8)
+			ctx->abcdefgh[i++] = 0;
+		i = 0;
+		while (i < 64)
+			ctx->w[i++] = 0;
 		ctx->addtemp = 0;
 		ctx->computed = 0;
 		ctx->corrupted = 0;
-		ft_memset(ctx->intermediate_hash, 0, 8);
+		i = 0;
+		while (i < 8)
+			ctx->intermediate_hash[i++] = 0;
 		ctx->length_high = 0;
 		ctx->length_low = 0;
 		ctx->message = ft_uchardup(msg);
@@ -161,27 +171,68 @@ int			ft_sha224_256init(t_sha224_256_ctx *ctx, int sha_type, uint8_t *msg)
 	return (FT_STATE_ERROR);
 }
 
-void	ft_sha224_256process_message(t_sha224_256_ctx *context)
+void	ft_sha224_256encode(uint32_t w[64], uint8_t mb[64])
 {
-	int		i;
-	uint8_t	*c;
+	int	t;
+	int	t4;
 
-	i = -1;
-	if (context)
+	t = 0;
+	t4 = 0;
+	while (t < 16)
 	{
-		c = ft_uchardup(context->message);
-		while (i++ < 20)
+		w[t] = ((uint32_t)mb[t4] << 24) | \
+			((uint32_t)mb[t4 + 1] << 16) | \
+			((uint32_t)mb[t4 + 2] << 8) | \
+			((uint32_t)mb[t4 + 3]);
+		t++;
+		t += 4;
+	}
+}
+
+void	ft_sha224_256process_message(t_sha224_256_ctx *ctx)
+{
+	int			t;
+	int			t4;
+	uint32_t	tmp1;
+	uint32_t	tmp2;
+
+	t = -1;
+	t4 = 0;
+	if (ctx)
+	{
+		// ft_sha224_256encode(ctx->w, ctx->msg_block);
+		while (t++ < 16)
 		{
-			if (i % 2 == 0)
-				ft_printf(FT_GREEN"%s"FT_RED"\t%s"FT_YELLOW"\n\t%s"FT_PURPLE"\t%s"FT_CYAN"\t%s\n", c , c, c, c, c);
-			if (i % 3 == 0)
-				ft_printf(FT_BROWN"%s"FT_GREEN"\t\n%s"FT_BLUE"\t%s"FT_RED"\t%s"FT_YELLOW"\t%s\n", c , c, c, c, c);
-			if (i % 4 == 0)
-				ft_printf(FT_RED"%s"FT_WHITE"\t%s"FT_RED"\n\t%s"FT_PURPLE"\t%s"FT_GREEN"\t%s\n", c , c, c, c, c);
-			if (i % 5 == 0)
-				ft_printf(FT_BLUE"%s"FT_YELLOW"\t\n%s"FT_WHITE"\t%s"FT_CYAN"\t%s"FT_YELLOW"\t%s\n", c , c, c, c, c);
+			ctx->w[t] = ((uint32_t)ctx->msg_block[t4] << 24) | \
+				((uint32_t)ctx->msg_block[t4 + 1] << 16) | \
+				((uint32_t)ctx->msg_block[t4 + 2] << 8) | \
+				((uint32_t)ctx->msg_block[t4 + 3]);
+			t4 += 4;
 		}
-		free((void *)c);
+		t = -1;
+		while (t++ < 64)
+			ctx->w[t] = SHA256_SIG1(ctx->w[t - 2] + ctx->w[t - 7] + \
+				SHA256_SIG0(ctx->w[t - 15]) + ctx->w[t - 16]);
+		t = -1;
+		while (t++ < 8)
+			ctx->abcdefgh[t] = ctx->intermediate_hash[t];
+		t = 0;
+		while (t < 64)
+		{
+			tmp1 = ctx->abcdefgh[7] + SHA256_SIG1(ctx->abcdefgh[4]) + \
+				SHA_CH(ctx->abcdefgh[4], ctx->abcdefgh[5], ctx->abcdefgh[6]) \
+				+ ctx->k[t] + ctx->w[t];
+			tmp2 = SHA256_SIGMA0(ctx->abcdefgh[0]) + SHA_MAJ(ctx->abcdefgh[0], ctx->abcdefgh[1], ctx->abcdefgh[2]);
+			ctx->abcdefgh[7] = ctx->abcdefgh[6];
+			ctx->abcdefgh[6] = ctx->abcdefgh[5];
+			ctx->abcdefgh[5] = ctx->abcdefgh[4];
+			ctx->abcdefgh[4] = ctx->abcdefgh[3] + tmp1;
+			ctx->abcdefgh[3] = ctx->abcdefgh[2];
+			ctx->abcdefgh[2] = ctx->abcdefgh[1];
+			ctx->abcdefgh[1] = ctx->abcdefgh[0];
+			ctx->abcdefgh[0] = tmp1 + tmp2;
+			t++;
+		}
 	}
 }
 

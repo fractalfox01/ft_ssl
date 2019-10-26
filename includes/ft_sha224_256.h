@@ -6,7 +6,7 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/25 13:52:25 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/10/26 12:06:18 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/10/26 16:35:32 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,9 @@
 
 # define FT_SHA224MSIZE		64
 # define FT_SHA256MSIZE		64
+
+# define SHA_CH(x, y, z)      (((x) & ((y) ^ (z))) ^ (z))
+# define SHA_MAJ(x, y, z)     (((x) & ((y) | (z))) | ((y) & (z)))
 
 /*
 ** Bit shift macro: shift x, n bits to the right 
@@ -83,6 +86,8 @@ enum {
 
 typedef struct		s_ft_sha
 {
+	uint32_t		abcdefgh[8];
+	uint32_t		w[64];
 	uint32_t		addtemp;
 	uint32_t		sha256_h0[FT_SHA256HSIZE / 4];
 	uint8_t			*message;
