@@ -6,7 +6,7 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/25 13:52:25 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/10/26 16:35:32 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/10/29 21:11:40 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # define FT_SHA_NULL		1
 # define FT_SHA_TOO_LONG	2
 # define FT_STATE_ERROR		3
+# define FT_BAD_PARAM		4
 
 /*
 **	Hash sizes for sha224 and sha256
@@ -86,28 +87,20 @@ enum {
 
 typedef struct		s_ft_sha
 {
-	uint32_t		abcdefgh[8];
+	uint32_t		count[3]; // count is used as temp variables through-out the program;
+	uint32_t		abcdefgh[8]; // message digest tmp
 	uint32_t		w[64];
-	uint32_t		addtemp;
 	uint32_t		sha256_h0[FT_SHA256HSIZE / 4];
-	uint8_t			*message;
 	uint8_t			msg_block[FT_SHA256MSIZE];
 	uint32_t		intermediate_hash[FT_SHA256HSIZE / 4];
-	uint32_t		length_high;
-	uint32_t		length_low;
-	int_least16_t	message_index;
-	uint32_t		computed;
-	uint32_t		corrupted;
 	uint32_t		k[64];
-}					t_sha224_256_ctx;
+	uint8_t			*message;
+	uint32_t		length;
+	uint32_t		bit_len;
+}					t_sha256_ctx;
 
-void		ft_sha256(const uint8_t *msg);
-void		ft_sha224(const uint8_t *msg);
-int			ft_sha224_256init(t_sha224_256_ctx *ctx, int sha_type, uint8_t *msg);
-int			sha256input(t_sha224_256_ctx *ctx, uint8_t *msg, uint32_t length);
-void		sha224_256process_message(t_sha224_256_ctx *context);
-void		sha224_256finalize(t_sha224_256_ctx *ctx, uint8_t pad_byte);
-void		sha224_256pad_message(t_sha224_256_ctx *ctx, uint8_t pad_byte);
-int			sha224_256result_n(t_sha224_256_ctx *ctx, uint8_t md[], int hsize);
+void		ft_sha256(uint8_t *msg);
+void		ft_sha224(uint8_t *msg);
+void		ft_sha256_init(t_sha256_ctx *context, uint8_t d[32], uint8_t *msg);
 
 #endif

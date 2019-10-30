@@ -5,59 +5,37 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/24 10:29:59 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/10/26 16:53:26 by tvandivi         ###   ########.fr       */
+/*   Created: 2019/10/29 16:54:13 by tvandivi          #+#    #+#             */
+/*   Updated: 2019/10/29 21:11:39 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/ft_ssl.h"
 #include "../../includes/ft_sha224_256.h"
 
-int		ft_sha224_256addlen(t_sha224_256_ctx *context, uint32_t length)
+void    ft_sha256_update()
 {
-	context->addtemp = context->length_low;
-	context->length_low += length;
-	context->corrupted = context->length_low;
-	if ((context->corrupted < context->addtemp) && (++context->length_high))
-		return (FT_SHA_TOO_LONG);
-	return (context->corrupted);
+
 }
 
-int		ft_sha256input(t_sha224_256_ctx *context, uint8_t *msg, uint32_t length)
+void    ft_sha256_transform()
 {
-	if (context && msg)
-	{
-		while (length--)
-		{
-			context->message[context->message_index++] = *msg;
-			msg++;
-		}
-	}
-	return (FT_SHA_SUCESS);
+
 }
 
-void		set224_h0(t_sha224_256_ctx *ctx)
+void    ft_sha256_encode()
 {
-	ctx->sha256_h0[0] = 0xc1059ed8;
-	ctx->sha256_h0[1] = 0x367cd507;
-	ctx->sha256_h0[2] = 0x3070dd17;
-	ctx->sha256_h0[3] = 0xf70e5939;
-	ctx->sha256_h0[4] = 0xffc00b31;
-	ctx->sha256_h0[5] = 0x68581511;
-	ctx->sha256_h0[6] = 0x64f98fa7;
-	ctx->sha256_h0[7] = 0xbefa4fa4;
+
 }
 
-void		set256_h0(t_sha224_256_ctx *ctx)
+void    ft_sha256_decode()
 {
-	ctx->sha256_h0[0] = 0x6A09E667;
-	ctx->sha256_h0[1] = 0xBB67AE85;
-	ctx->sha256_h0[2] = 0x3C6EF372;
-	ctx->sha256_h0[3] = 0xA54FF53A;
-	ctx->sha256_h0[4] = 0x510E527F;
-	ctx->sha256_h0[5] = 0x9B05688C;
-	ctx->sha256_h0[6] = 0x1F83D9AB;
-	ctx->sha256_h0[7] = 0x5BE0CD19;
+
+}
+
+void    ft_sha256_final()
+{
+
 }
 
 void	k1(uint32_t k[64])
@@ -118,10 +96,8 @@ void	k2(uint32_t k[64])
 	k[49] = 0x1e376c08;
 }
 
-void	k_set(uint32_t k[64])
+void	k3(uint32_t k[64])
 {
-	k1(k);
-	k2(k);
 	k[50] = 0x2748774c;
 	k[51] = 0x34b0bcb5;
 	k[52] = 0x391c0cb3;
@@ -138,135 +114,53 @@ void	k_set(uint32_t k[64])
 	k[63] = 0xc67178f2;
 }
 
-int			ft_sha224_256init(t_sha224_256_ctx *ctx, int sha_type, uint8_t *msg)
+void	init_loops(t_sha256_ctx *context, uint8_t digest[32])
 {
 	int	i;
 
 	i = 0;
-	if (ctx && sha_type)
-	{
-		while (i < 8)
-			ctx->abcdefgh[i++] = 0;
-		i = 0;
-		while (i < 64)
-			ctx->w[i++] = 0;
-		ctx->addtemp = 0;
-		ctx->computed = 0;
-		ctx->corrupted = 0;
-		i = 0;
-		while (i < 8)
-			ctx->intermediate_hash[i++] = 0;
-		ctx->length_high = 0;
-		ctx->length_low = 0;
-		ctx->message = ft_uchardup(msg);
-		ctx->message_index = 0;
-		ft_memset(ctx->msg_block, 0, 64);
-		k_set(ctx->k);
-		if (sha_type == 244)
-			set224_h0(ctx);
-		else if (sha_type == 256)
-			set256_h0(ctx);
-		return (FT_SHA_SUCESS);
-	}
-	return (FT_STATE_ERROR);
+	while (i < 3)
+		context->count[i++] = 0;
+	i = 0;
+	while (i < 8)
+		context->abcdefgh[i++] = 0;
+	i = 0;
+	while (i < 64)
+		context->w[i++] = 0;
+	i = 0;
+	while (i < FT_SHA256MSIZE)
+		context->msg_block[i++] = 0;
+	i = 0;
+	while (i < (FT_SHA256HSIZE / 4))
+		context->msg_block[i++] = 0;
+	i = 0;
+	while (i < 32)
+		digest[i++] = 0;
 }
 
-void	ft_sha224_256encode(uint32_t w[64], uint8_t mb[64])
+void    ft_sha256_init(t_sha256_ctx *context, uint8_t d[32], uint8_t *message)
 {
-	int	t;
-	int	t4;
-
-	t = 0;
-	t4 = 0;
-	while (t < 16)
-	{
-		w[t] = ((uint32_t)mb[t4] << 24) | \
-			((uint32_t)mb[t4 + 1] << 16) | \
-			((uint32_t)mb[t4 + 2] << 8) | \
-			((uint32_t)mb[t4 + 3]);
-		t++;
-		t += 4;
-	}
+	init_loops(context, d);
+	context->message = ft_uchardup(message);
+	context->length = ft_ustrlen(message);
+	context->bit_len = context->length * 8;
+	k1(context->k);
+	k2(context->k);
+	k3(context->k);
+	context->sha256_h0[0] = 0x6A09E667;
+	context->sha256_h0[1] = 0xBB67AE85;
+	context->sha256_h0[2] = 0x3C6EF372;
+	context->sha256_h0[3] = 0xA54FF53A;
+	context->sha256_h0[4] = 0x510E527F;
+	context->sha256_h0[5] = 0x9B05688C;
+	context->sha256_h0[6] = 0x1F83D9AB;
+	context->sha256_h0[7] = 0x5BE0CD19;
 }
 
-void	ft_sha224_256process_message(t_sha224_256_ctx *ctx)
+void    ft_sha256(uint8_t *message)
 {
-	int			t;
-	int			t4;
-	uint32_t	tmp1;
-	uint32_t	tmp2;
+	t_sha256_ctx	context;
+	uint8_t			*digest[32];
 
-	t = -1;
-	t4 = 0;
-	if (ctx)
-	{
-		// ft_sha224_256encode(ctx->w, ctx->msg_block);
-		while (t++ < 16)
-		{
-			ctx->w[t] = ((uint32_t)ctx->msg_block[t4] << 24) | \
-				((uint32_t)ctx->msg_block[t4 + 1] << 16) | \
-				((uint32_t)ctx->msg_block[t4 + 2] << 8) | \
-				((uint32_t)ctx->msg_block[t4 + 3]);
-			t4 += 4;
-		}
-		t = -1;
-		while (t++ < 64)
-			ctx->w[t] = SHA256_SIG1(ctx->w[t - 2] + ctx->w[t - 7] + \
-				SHA256_SIG0(ctx->w[t - 15]) + ctx->w[t - 16]);
-		t = -1;
-		while (t++ < 8)
-			ctx->abcdefgh[t] = ctx->intermediate_hash[t];
-		t = 0;
-		while (t < 64)
-		{
-			tmp1 = ctx->abcdefgh[7] + SHA256_SIG1(ctx->abcdefgh[4]) + \
-				SHA_CH(ctx->abcdefgh[4], ctx->abcdefgh[5], ctx->abcdefgh[6]) \
-				+ ctx->k[t] + ctx->w[t];
-			tmp2 = SHA256_SIGMA0(ctx->abcdefgh[0]) + SHA_MAJ(ctx->abcdefgh[0], ctx->abcdefgh[1], ctx->abcdefgh[2]);
-			ctx->abcdefgh[7] = ctx->abcdefgh[6];
-			ctx->abcdefgh[6] = ctx->abcdefgh[5];
-			ctx->abcdefgh[5] = ctx->abcdefgh[4];
-			ctx->abcdefgh[4] = ctx->abcdefgh[3] + tmp1;
-			ctx->abcdefgh[3] = ctx->abcdefgh[2];
-			ctx->abcdefgh[2] = ctx->abcdefgh[1];
-			ctx->abcdefgh[1] = ctx->abcdefgh[0];
-			ctx->abcdefgh[0] = tmp1 + tmp2;
-			t++;
-		}
-	}
-}
-
-void	ft_sha224_256finalize(t_sha224_256_ctx *context, uint8_t pad_byte)
-{
-	if (context && pad_byte)
-	{
-		//%s
-	}
-}
-
-void	ft_sha224_256pad_message(t_sha224_256_ctx *context, uint8_t pad_byte)
-{
-	if (context && pad_byte)
-	{
-		//%s
-	}
-}
-
-int		ft_sha224_256result_n(t_sha224_256_ctx *context, uint8_t md[], int hsize)
-{
-	if (context && md && hsize)
-	{
-		//%s
-	}
-	return (FT_SHA_SUCESS);
-}
-
-void	ft_sha256(const uint8_t *msg)
-{
-	t_sha224_256_ctx	context;
-
-	ft_printf("sha256: %s\n", msg);
-	ft_sha224_256init(&context, 256, (uint8_t *)msg);
-	ft_sha224_256process_message(&context);
-
+	ft_sha256_init(&context, digest, message);
 }
