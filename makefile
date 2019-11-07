@@ -3,8 +3,8 @@ NAME= ft_ssl
 FLAGS= -Wall -Werror -Wextra
 
 SRC= $(addsuffix .c, utils/ft_ssl_utils utils/ft_ssl_getoptions \
-	crypto/md5/ft_md5_rounds crypto/md5/ft_md5 crypto/sha256/ft_sha256 \
-	crypto/sha224/ft_sha224 main)
+	crypto/md5/ft_md5_rounds crypto/md5/ft_md5 crypto/sha256/oldft_sha256 \
+	crypto/sha256/ft_sha256_utils crypto/sha224/ft_sha224 main)
 
 $(NAME):
 	@echo "\033[0;32mBuilding FT_SSL Program\033[0m"
