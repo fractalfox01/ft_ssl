@@ -6,7 +6,7 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/04 09:13:39 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/11/06 16:23:57 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/11/07 15:41:01 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ void	        ft_sha256_init(t_sha256_ctx *ctx, uint8_t d[32], uint8_t *message)
 	init_loops(ctx, d);
 	ctx->message = ft_uchardup(message);
 	ctx->length = ft_ustrlen(message);
-	ctx->bit_len = ctx->length * 8;
+	ctx->bit_len = (uint64_t)ctx->length * 8;
 	k1(ctx->k);
 	k2(ctx->k);
 	k3(ctx->k);

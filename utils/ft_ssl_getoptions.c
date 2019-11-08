@@ -6,7 +6,7 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/18 15:03:38 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/10/24 15:56:23 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/11/07 11:32:30 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ int    ft_ssl_proccess_message(unsigned char *message, t_getopt *glb_opt, t_opt 
 		glb_opt->opt_quiet = 1;
 	else if (ft_ustrcmp(message, (const unsigned char *)"-p") == 0)
 		ft_ssl_get_flag(message, glb_opt, opt);
-	else if (ft_ustrcmp(message, (const unsigned char *)"-s") == 0)
+	else if (ft_ustrcmp(message, (const unsigned char *)"as") == 0)
 		ft_ssl_get_flag(message, glb_opt, opt);
 	else if ((msg = try_open(glb_opt, message)))
 	{

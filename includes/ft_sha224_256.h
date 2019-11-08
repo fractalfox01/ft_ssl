@@ -6,7 +6,7 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/25 13:52:25 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/11/06 16:51:53 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/11/08 12:30:20 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@
 # endif
 
 # ifndef ROT_R
-#  define ROT_R(x, n)		(((x) >> (n)) | ((x) << (32 - (n))))
+#  define ROT_R(n, x) ((x >> n) | (x << (32 - n)))
 # endif
 
 /*
@@ -62,8 +62,8 @@
 # define SHA_MAJ(x, y, z)	(((x) & (y)) ^ ((x) & (z)) ^ ((y) & (z)))
 # define SHA256_SIGMA0(x)	(ROT_R(2, x) ^ ROT_R(13, x) ^ ROT_R(22, x))
 # define SHA256_SIGMA1(x)	(ROT_R(6, x) ^ ROT_R(11, x) ^ ROT_R(25, x))
-# define SHA256_SIG0(x)		(ROT_R(7, x) ^ ROT_R(18, x) ^ ROT_R(3, x))
-# define SHA256_SIG1(x)		(ROT_R(17, x) ^ ROT_R(19, x) ^ ROT_R(10, x))
+# define SHA256_SIG0(x)		(ROT_R(7, x) ^ ROT_R(18, x) ^ SHA256_SHIFT(3, x))
+# define SHA256_SIG1(x)		(ROT_R(17, x) ^ ROT_R(19, x) ^ SHA256_SHIFT(10, x))
 
 # define COUNT0				ctx->count[0]
 # define COUNT1				ctx->count[1]
@@ -79,7 +79,7 @@ typedef struct	s_ft_sha
 	uint32_t	k[64];
 	uint8_t		*message;
 	uint32_t	length;
-	uint32_t	bit_len;
+	uint64_t	bit_len;
 }				t_sha256_ctx;
 
 void		ft_sha256(uint8_t *msg);
