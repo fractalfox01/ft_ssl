@@ -6,7 +6,7 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/18 15:03:38 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/11/07 11:32:30 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/11/08 12:49:31 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ void    ft_ssl_get_flag(unsigned char *flag, t_getopt *glb_opt, t_opt *opt)
 {
 	if (ft_ustrcmp(flag, (const unsigned char *)"-p") == 0)
 	{
-		// ft_printf("total: %d\tp flag\n", glb_opt->opt_total);
 		glb_opt->opt_total++;
 		opt->cmdarg[0] = 'p';
 		opt->message = (unsigned char *)read_from_stdin(glb_opt);
@@ -54,7 +53,7 @@ int    ft_ssl_proccess_message(unsigned char *message, t_getopt *glb_opt, t_opt 
 		glb_opt->opt_quiet = 1;
 	else if (ft_ustrcmp(message, (const unsigned char *)"-p") == 0)
 		ft_ssl_get_flag(message, glb_opt, opt);
-	else if (ft_ustrcmp(message, (const unsigned char *)"as") == 0)
+	else if (ft_ustrcmp(message, (const unsigned char *)"-s") == 0)
 		ft_ssl_get_flag(message, glb_opt, opt);
 	else if ((msg = try_open(glb_opt, message)))
 	{
@@ -74,11 +73,9 @@ int    ft_ssl_proccess_message(unsigned char *message, t_getopt *glb_opt, t_opt 
 		}
 		else
 		{
-			// ft_printf("bad end\n");
 			return (0);
 		}
 	}
-	// ft_printf("msg = %s\n", msg);
 	return (1);
 }
 
@@ -101,15 +98,9 @@ int		ft_getopt(int ac, char **av, t_getopt *glb_opt)
 			ft_ssl_get_type(av[i], glb_opt);
 		else
 		{
-			// if (i == 7)
-			// 	ft_printf("7 = %s\n", av[8]);
-			// ft_printf("its %d\n", i);
 			ft_ssl_proccess_message((unsigned char *)av[i], glb_opt, opt, msg);
 		}
-		// if (msg)
-		// 	ft_strdel((void *)msg);
 		i++;
 	}
-	// ft_printf("i = %d\tsuccess = %d\tend = %d\n", i, glb_opt->success, glb_opt->end);
 	return (glb_opt->success);
 }
