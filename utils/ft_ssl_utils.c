@@ -6,7 +6,7 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/23 19:22:06 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/10/24 15:58:41 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/11/08 16:50:42 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,8 +67,8 @@ void	ft_ssl_message(char *invalid)
 	ft_printf(FT_RED);
 	ft_printf("ft_ssl: Error: '%s' is an invalid command.\n\n", invalid);
 	ft_printf(FT_GREEN);
-	ft_printf("Standard commands:\n\nMessage Digest commands:\nmd5\n \
-			sha256\n\n");
+	ft_printf("Standard commands:\n\nMessage Digest commands:\nmd5\n");
+	ft_printf("sha256\n\n");
 	ft_printf("Cipher commands:\n");
 	ft_printf(FT_END_ATTR);
 }
@@ -115,14 +115,13 @@ unsigned char	*try_open(t_getopt *glb_opt, unsigned char *file)
 	return (NULL);
 }
 
-void	ft_ssl_preform_action(t_getopt *glb_opt, t_opt *opt)
+uint8_t	*ft_ssl_preform_action(t_getopt *glb_opt, t_opt *opt)
 {
 	if (glb_opt->opt_choice == 1)
-		ft_md5(opt->message);
+		return (ft_md5(opt->message));
 	else if (glb_opt->opt_choice == 2)
-		ft_sha256(opt->message);
+		return (ft_sha256(opt->message));
 	else if (glb_opt->opt_choice == 3)
-		ft_sha224(opt->message);
-	else
-		ft_ssl_message("<unknown>");
+		return (ft_sha224(opt->message));
+	return (NULL);
 }

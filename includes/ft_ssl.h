@@ -67,7 +67,7 @@ typedef struct		s_ft_getopt
 unsigned char		*ft_md5(const unsigned char *d);
 void				ft_ssl_message(char *invalid);
 void				ft_ssl_free_optins(t_getopt *glb_opt);
-void				ft_ssl_preform_action(t_getopt *glb_opt, t_opt *opt);
+uint8_t				*ft_ssl_preform_action(t_getopt *glb_opt, t_opt *opt);
 int					ft_getopt(int ac, char **av, t_getopt *glb_opt);
 t_opt				*get_opt(t_getopt *glb_opt);
 t_opt				*newsslnode(void);

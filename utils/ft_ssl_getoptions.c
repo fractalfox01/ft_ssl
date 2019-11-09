@@ -6,7 +6,7 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/18 15:03:38 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/11/08 12:49:31 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/11/08 16:49:43 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,11 @@ void    ft_ssl_get_flag(unsigned char *flag, t_getopt *glb_opt, t_opt *opt)
 
 int    ft_ssl_proccess_message(unsigned char *message, t_getopt *glb_opt, t_opt *opt, unsigned char *msg)
 {
+	if (ft_ustrcmp(message, (const uint8_t *)"0xdeadbeeef") == 0)
+	{
+		ft_ssl_get_flag((unsigned char *)"-p", glb_opt, opt);
+		return (1);
+	}
 	if (ft_ustrcmp((const unsigned char *)"-r", message) == 0)
 		glb_opt->opt_reverse = 1;
 	else if (ft_ustrcmp((const unsigned char *)"-q", message) == 0)
@@ -96,6 +101,10 @@ int		ft_getopt(int ac, char **av, t_getopt *glb_opt)
 		opt = get_opt(glb_opt);
 		if (i == 1)
 			ft_ssl_get_type(av[i], glb_opt);
+		if (ac == 2)
+		{
+			ft_ssl_proccess_message((unsigned char *)"0xdeadbeeef", glb_opt, opt, msg);
+		}
 		else
 		{
 			ft_ssl_proccess_message((unsigned char *)av[i], glb_opt, opt, msg);

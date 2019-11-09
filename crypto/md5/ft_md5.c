@@ -6,7 +6,7 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/02 10:28:18 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/10/29 20:56:49 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/11/08 14:16:23 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,6 +152,7 @@ unsigned char		*ft_md5(const unsigned char *d)
 {
 	t_md5_ctx		context;
 	unsigned char	md[16];
+	uint8_t			*digest;
 	int	i;
 
 	i = 0;
@@ -166,9 +167,13 @@ unsigned char		*ft_md5(const unsigned char *d)
 	context.msg = ft_uchardup(d);
 	md5_update(&context, (unsigned char *)d, ft_ustrlen((unsigned char *)d));
 	md5_final(md, &context);
-	i = 0;
-	while (i < 16)
-		ft_printf("%02x", md[i++]);
-	ft_printf("\n");
-	return (NULL);
+	// i = 0;
+	// while (i < 16)
+	// 	ft_printf("%02x", md[i++]);
+	// ft_printf("\n");
+	digest = ft_ustrnew(16);
+	i = -1;
+	while (i++ < 16)
+		digest[i] = md[i];
+	return (digest);
 }

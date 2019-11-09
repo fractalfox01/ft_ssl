@@ -6,7 +6,7 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/25 13:52:25 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/11/08 12:30:20 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/11/08 14:02:03 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,8 +82,8 @@ typedef struct	s_ft_sha
 	uint64_t	bit_len;
 }				t_sha256_ctx;
 
-void		ft_sha256(uint8_t *msg);
-void		ft_sha224(uint8_t *msg);
+uint8_t		*ft_sha256(uint8_t *msg);
+uint8_t		*ft_sha224(uint8_t *msg);
 void		ft_sha256_init(t_sha256_ctx *ctx, uint8_t d[32], uint8_t *msg);
 void		ft_sha256_final(t_sha256_ctx *context, uint8_t digest[32]);
 void		ft_sha256_decode(uint32_t *w, uint8_t *msg);

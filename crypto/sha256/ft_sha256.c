@@ -6,7 +6,7 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/24 10:29:59 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/11/08 13:19:16 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/11/08 14:17:50 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,7 +121,6 @@ void	ft_sha256_update(t_sha256_ctx *ctx, uint8_t *input, uint32_t mlen)
 		ft_sha256_transform(ctx, msg);
 		while ((i + 63) <= mlen)
 		{
-			// ft_memcpy(msg, (input + i), 64);
 			ft_sha256_transform(ctx, (input + i));
 			i += 64;
 		}
@@ -151,19 +150,21 @@ void	ft_sha256_final(t_sha256_ctx *ctx, uint8_t digest[32])
 	ft_sha256_encode(digest, ctx->sha256_h0, 32);
 }
 
-void	ft_sha256(uint8_t *message)
+uint8_t	*ft_sha256(uint8_t *message)
 {
 	t_sha256_ctx	context;
-	uint8_t			digest[32];
+	uint8_t			md[32];
+	uint8_t			*digest;
 	int	i;
 
 	i = 0;
 	
-	ft_sha256_init(&context, digest, message);
+	ft_sha256_init(&context, md, message);
 	ft_sha256_update(&context, message, ft_ustrlen(message));
-	ft_sha256_final(&context, digest);
-	i = 0;
-	while (i < 32)
-		ft_printf("%02x", digest[i++]);
-	ft_printf("\n");
+	ft_sha256_final(&context, md);
+	i = -1;
+	digest = ft_ustrnew(32);
+	while (i++ < 32)
+		digest[i] = md[i];
+	return (digest);
 }
