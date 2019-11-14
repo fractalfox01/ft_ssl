@@ -6,7 +6,7 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/18 15:03:38 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/11/08 16:49:43 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/11/13 21:46:45 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void    ft_ssl_get_flag(unsigned char *flag, t_getopt *glb_opt, t_opt *opt)
 	}
 }
 
-int    ft_ssl_proccess_message(unsigned char *message, t_getopt *glb_opt, t_opt *opt, unsigned char *msg)
+int    ft_ssl_proccess(unsigned char *message, t_getopt *glb_opt, t_opt *opt, unsigned char *msg)
 {
 	if (ft_ustrcmp(message, (const uint8_t *)"0xdeadbeeef") == 0)
 	{
@@ -77,9 +77,7 @@ int    ft_ssl_proccess_message(unsigned char *message, t_getopt *glb_opt, t_opt 
 			glb_opt->skip = 0;
 		}
 		else
-		{
 			return (0);
-		}
 	}
 	return (1);
 }
@@ -102,13 +100,9 @@ int		ft_getopt(int ac, char **av, t_getopt *glb_opt)
 		if (i == 1)
 			ft_ssl_get_type(av[i], glb_opt);
 		if (ac == 2)
-		{
-			ft_ssl_proccess_message((unsigned char *)"0xdeadbeeef", glb_opt, opt, msg);
-		}
+			ft_ssl_proccess((unsigned char *)"0xdeadbeeef", glb_opt, opt, msg);
 		else
-		{
-			ft_ssl_proccess_message((unsigned char *)av[i], glb_opt, opt, msg);
-		}
+			ft_ssl_proccess((unsigned char *)av[i], glb_opt, opt, msg);
 		i++;
 	}
 	return (glb_opt->success);
