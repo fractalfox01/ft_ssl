@@ -6,7 +6,7 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/25 13:52:25 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/11/08 14:02:03 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/11/11 18:47:10 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,14 +65,16 @@
 # define SHA256_SIG0(x)		(ROT_R(7, x) ^ ROT_R(18, x) ^ SHA256_SHIFT(3, x))
 # define SHA256_SIG1(x)		(ROT_R(17, x) ^ ROT_R(19, x) ^ SHA256_SHIFT(10, x))
 
-# define COUNT0				ctx->count[0]
-# define COUNT1				ctx->count[1]
-# define COUNT2				ctx->count[2]
+# define COUNT0	ctx->count[0]
+# define COUNT1	ctx->count[1]
+# define COUNT2	ctx->count[2]
 
 typedef struct	s_ft_sha
 {
 	uint32_t	count[3];
+	uint32_t	tmp[3];
 	uint32_t	w[64];
+	uint32_t	buf[64];
 	uint32_t	sha256_h0[8];
 	uint8_t		msg_block[FT_SHA256MSIZE];
 	uint32_t	abc[8];
@@ -80,15 +82,15 @@ typedef struct	s_ft_sha
 	uint8_t		*message;
 	uint32_t	length;
 	uint64_t	bit_len;
-}				t_sha256_ctx;
+}				t_256ctx;
 
-uint8_t		*ft_sha256(uint8_t *msg);
-uint8_t		*ft_sha224(uint8_t *msg);
-void		ft_sha256_init(t_sha256_ctx *ctx, uint8_t d[32], uint8_t *msg);
-void		ft_sha256_final(t_sha256_ctx *context, uint8_t digest[32]);
-void		ft_sha256_decode(uint32_t *w, uint8_t *msg);
-void		ft_sha256_encode(uint8_t digest[32], uint32_t s[8], uint32_t mlen);
-void		ft_sha256_transform(t_sha256_ctx *context, uint8_t buf[64]);
-void		ft_sha256_update(t_sha256_ctx *ctx, uint8_t *input, uint32_t mlen);
+uint8_t			*ft_sha256(uint8_t *msg);
+uint8_t			*ft_sha224(uint8_t *msg);
+void			ft_sha256_init(t_256ctx *ctx, uint8_t d[32], uint8_t *msg);
+void			ft_sha256_final(t_256ctx *context, uint8_t digest[32]);
+void			ft_sha256_decode(uint32_t *w, uint8_t *msg);
+void			ft_256encode(uint8_t digest[32], uint32_t s[8], uint32_t mlen);
+void			ft_sha256_transform(t_256ctx *context, uint8_t buf[64]);
+void			u256(t_256ctx *ctx, uint8_t *input, uint32_t mlen, uint32_t i);
 
 #endif

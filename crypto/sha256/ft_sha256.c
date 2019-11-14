@@ -6,13 +6,13 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/24 10:29:59 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/11/08 14:17:50 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/11/11 18:49:17 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/ft_sha224_256.h"
 
-void	ft_sha256_encode(uint8_t *digest, uint32_t *s, uint32_t mlen)
+void	ft_256encode(uint8_t *digest, uint32_t *s, uint32_t mlen)
 {
 	uint32_t	i;
 	uint32_t	j;
@@ -49,61 +49,14 @@ void	ft_sha256_decode(uint32_t *w, uint8_t *msg)
 	t = 16;
 	while (t < 64)
 	{
-		w[t] = SHA256_SIG1(w[t - 2]) + w[t - 7] + SHA256_SIG0(w[t - 15]) + w[t - 16];
+		w[t] = SHA256_SIG1(w[t - 2]) + w[t - 7] + \
+			SHA256_SIG0(w[t - 15]) + w[t - 16];
 		t++;
 	}
 }
 
-void	ft_sha256_transform(t_sha256_ctx *context, uint8_t buf[64])
+void	u256(t_256ctx *ctx, uint8_t *input, uint32_t mlen, uint32_t i)
 {
-	uint32_t	i;
-	uint32_t	j;
-	uint32_t	k;
-	uint32_t	abc[8];
-	uint32_t	w[64];
-
-	i = 0;
-	j = 0;
-	k = 0;
-	while (i < 8)
-		abc[i++] = 0;
-	i = 0;
-	while (i < 64)
-		w[i++] = 0;
-	i = 0;
-	ft_sha256_decode(w, buf);
-	while (i < 8)
-	{
-		abc[i] = context->sha256_h0[i];
-		i++;
-	}
-	i = 0;
-	while (i < 64)
-	{
-		j = abc[7] + SHA256_SIGMA1(abc[4]) + SHA_CH(abc[4], abc[5], abc[6]) \
-		+ context->k[i] + w[i];
-		k = SHA256_SIGMA0(abc[0]) + SHA_MAJ(abc[0], abc[1], abc[2]);
-		abc[7] = abc[6];
-		abc[6] = abc[5];
-		abc[5] = abc[4];
-		abc[4] = abc[3] + j;
-		abc[3] = abc[2];
-		abc[2] = abc[1];
-		abc[1] = abc[0];
-		abc[0] = j + k;
-		i++;
-	}
-	i = 0;
-	while (i < 8)
-	{
-		context->sha256_h0[i] += abc[i];
-		i++;
-	}
-}
-
-void	ft_sha256_update(t_sha256_ctx *ctx, uint8_t *input, uint32_t mlen)
-{
-	uint32_t	i;
 	uint32_t	index;
 	uint32_t	partlen;
 	uint8_t		msg[64];
@@ -131,11 +84,11 @@ void	ft_sha256_update(t_sha256_ctx *ctx, uint8_t *input, uint32_t mlen)
 	ft_memcpy(ctx->msg_block, (input + i), (mlen - i));
 }
 
-void	ft_sha256_final(t_sha256_ctx *ctx, uint8_t digest[32])
+void	ft_sha256_final(t_256ctx *ctx, uint8_t digest[32])
 {
-	uint32_t i;
-	uint32_t j;
-	uint32_t padlen;
+	uint32_t	i;
+	uint32_t	j;
+	uint32_t	padlen;
 
 	i = ctx->length;
 	j = 0;
@@ -147,20 +100,19 @@ void	ft_sha256_final(t_sha256_ctx *ctx, uint8_t digest[32])
 		j++;
 	}
 	ft_sha256_transform(ctx, ctx->msg_block);
-	ft_sha256_encode(digest, ctx->sha256_h0, 32);
+	ft_256encode(digest, ctx->sha256_h0, 32);
 }
 
 uint8_t	*ft_sha256(uint8_t *message)
 {
-	t_sha256_ctx	context;
-	uint8_t			md[32];
-	uint8_t			*digest;
-	int	i;
+	t_256ctx	context;
+	uint8_t		md[32];
+	uint8_t		*digest;
+	int			i;
 
 	i = 0;
-	
 	ft_sha256_init(&context, md, message);
-	ft_sha256_update(&context, message, ft_ustrlen(message));
+	u256(&context, message, ft_ustrlen(message), 0);
 	ft_sha256_final(&context, md);
 	i = -1;
 	digest = ft_ustrnew(32);

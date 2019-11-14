@@ -2,8 +2,10 @@ NAME= ft_ssl
 
 FLAGS= -Wall -Werror -Wextra
 
-SRC= $(addsuffix .c, utils/ft_ssl_utils utils/ft_ssl_getoptions \
-	crypto/md5/ft_md5_rounds crypto/md5/ft_md5 crypto/sha256/ft_sha256 \
+SRC= $(addsuffix .c, utils/ft_ssl_utils1 utils/ft_ssl_utils2 utils/ft_ssl_getoptions \
+	utils/ft_ssl_utils3 crypto/md5/ft_md5_transform crypto/md5/ft_md5_utils crypto/md5/ft_md5 \
+	crypto/md5/md5round1 crypto/md5/md5round2 crypto/md5/md5round3 crypto/md5/md5round4 \
+	crypto/sha256/ft_sha256 crypto/sha256/ft_sha256_transform \
 	crypto/sha256/ft_sha256_utils crypto/sha224/ft_sha224 main)
 
 $(NAME):
@@ -30,6 +32,6 @@ re: fc all
 debug: fc
 	@echo "\033[0;32mBuilding FT_SSL \033[0;35mDEBUG MODE\033[0m"
 	@make -C libft
-	@$(CC) -g $(FLAGS) $(SRC) libft/libft.a -o ft_ssl_debug
+	@$(CC) -fsanitize=address -g $(FLAGS) $(SRC) libft/libft.a -o ft_ssl_debug
 
 .PHONY: clean fclean fc re main.c ft_ssl

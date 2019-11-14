@@ -6,92 +6,107 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/21 22:31:46 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/11/08 16:36:46 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/11/13 18:17:50 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/ft_ssl.h"
 
-t_opt	*ft_ssl_parse_options(t_getopt *glb_opt, int ac, char **av)
+void	ft_ssl_get_type(char *type, t_getopt *glb_opt)
 {
-	t_opt		*opt;
-	int			a;
-	ft_opt_init(glb_opt);
-	opt = glb_opt->opt;
-	if ((a = ft_getopt(ac, av, glb_opt)) == 0)
+	if (ft_strcmp(type, "md5") == 0)
+		glb_opt->opt_choice = 1;
+	else if (ft_strcmp(type, "sha256") == 0)
+		glb_opt->opt_choice = 2;
+	else if (ft_strcmp(type, "sha224") == 0)
+		glb_opt->opt_choice = 3;
+	else
+		glb_opt->success = 0;
+}
+
+void	print_other(t_getopt glb_opt, t_opt *opt, uint8_t *digest, int size)
+{
+	int		i;
+
+	i = 0;
+	if (glb_opt.opt_quiet == 1 || glb_opt.opt_reverse == 1)
 	{
-		if (glb_opt->opt_choice == 0)
-			ft_printf("usage: ft_ssl command [command opts] [command args]\n");
+		while (i < size)
+			printf("%02x", digest[i++]);
+		if (glb_opt.opt_quiet == 0 && opt->cmdarg[0] == 's')
+			printf(" \"%s\"\n", opt->message);
+		else if (glb_opt.opt_quiet == 0)
+			printf(" %s\n", opt->file);
 		else
-			ft_printf("Bad ssl option\n");
-		return (NULL);
+			printf("\n");
 	}
-	return (opt);
+	else
+	{
+		if (opt->cmdarg[0] == 's')
+			printf("%s (\"%s\") ", set_type(size), opt->message);
+		else
+			printf("%s (\"%s\") ", set_type(size), opt->file);
+		while (i < size)
+			printf("%02x", digest[i++]);
+		printf("\n");
+	}
 }
 
 void	output_hash(t_opt *opt, t_getopt glb_opt, uint8_t *digest, int size)
 {
 	int		i;
-	char	*mtype;
 
 	i = 0;
-	if (size == 16)
-		mtype = ft_strdup("MD5");
-	else
-		mtype = ft_strdup("SHA256");
 	if (opt->cmdarg[0] == 'p')
-	{
-		if (glb_opt.opt_choice == 1)
-		{
-			if (glb_opt.opt_quiet == 0)
-				ft_printf("%s", opt->message);
-			i = 0;
-			while (i < size)
-				ft_printf("%02x", digest[i++]);
-			ft_printf("\n");
-		}
-		if (glb_opt.opt_choice == 2)
-		{
-			if (glb_opt.opt_quiet == 0)
-				ft_printf("%s", opt->message);
-			i = 0;
-			while (i < size)
-				ft_printf("%02x", digest[i++]);
-			ft_printf("\n");
-		}
-	}
+		print_p(digest, size);
 	else
+		print_other(glb_opt, opt, digest, size);
+}
+
+void	looper(t_getopt glb_opt, t_opt *opt)
+{
+	uint8_t		*digest;
+
+	while (opt->message)
 	{
-		if (glb_opt.opt_quiet == 1)
+		digest = ft_ssl_preform_action(&glb_opt, opt);
+		if (glb_opt.opt_choice == 1)
+			output_hash(opt, glb_opt, digest, 16);
+		if (glb_opt.opt_choice == 2)
+			output_hash(opt, glb_opt, digest, 32);
+		opt = opt->next;
+		ft_strdel((char **)&digest);
+	}
+}
+
+void				ft_ssl_free_optins(t_getopt *glb_opt)
+{
+	t_opt	*tmp_opt;
+	t_opt	*n;
+	int		i;
+
+	i = 0;
+	if (glb_opt)
+	{
+		tmp_opt = glb_opt->opt;
+		if (glb_opt->chunk)
+			ft_strdel((char **)&glb_opt->chunk);
+		while (tmp_opt)
 		{
+			while (i < 64)
+				tmp_opt->chunk[i++] = 0;
+			tmp_opt->cmdarg[0] = 0;
+			tmp_opt->cmdarg[1] = 0;
+			if (tmp_opt->message)
+				ft_strdel((char **)&tmp_opt->message);
+			if (tmp_opt->file)
+			{
+				ft_strdel((char **)&(tmp_opt->file));
+			}
+			n = tmp_opt->next;
+			free((void *)tmp_opt);
+			tmp_opt = n;
 			i = 0;
-			while (i < size)
-				ft_printf("%02x", digest[i++]);
-			ft_printf("\n");
-		}
-		else if (glb_opt.opt_reverse == 1)
-		{
-			i = 0;
-			while (i < size)
-				ft_printf("%02x", digest[i++]);
-			if (glb_opt.opt_quiet == 0)
-				ft_printf(" \"%s\"\n", opt->message);
-		}
-		else if (opt->cmdarg[0] == 's')
-		{
-			i = 0;
-			if (glb_opt.opt_quiet == 0)
-				ft_printf("%s (\"%s\") = ", mtype, opt->message);
-			while (i < size)
-				ft_printf("%02x", digest[i++]);
-			ft_printf("\n");
-		}
-		else
-		{
-			i = 0;
-			while (i < size)
-				ft_printf("%02x", digest[i++]);
-			ft_printf("\n");
 		}
 	}
 }
@@ -100,24 +115,14 @@ int		main(int ac, char **av)
 {
 	t_getopt	glb_opt;
 	t_opt		*opt;
-	uint8_t		*digest;
 
 	if (ac >= 2)
 	{
 		opt = ft_ssl_parse_options(&glb_opt, ac, av);
 		if (opt)
 		{
-			while (opt->message)
-			{
-				// ft_printf("message: %s\n", opt->message);
-				digest = ft_ssl_preform_action(&glb_opt, opt);
-				if (glb_opt.opt_choice == 1)
-					output_hash(opt, glb_opt, digest, 16);
-				if (glb_opt.opt_choice == 2)
-					output_hash(opt, glb_opt, digest, 32);
-				opt = opt->next;
-			}
-		}	//ft_ssl_free_optins(&glb_opt);
+			looper(glb_opt, opt);
+		}
 	}
 	else
 	{
@@ -126,5 +131,7 @@ int		main(int ac, char **av)
 		else
 			ft_printf("usage: ft_ssl command [command opts] [command args]\n");
 	}
+	ft_ssl_free_optins(&glb_opt);
+	// system("leaks ft_ssl");
 	return (0);
 }

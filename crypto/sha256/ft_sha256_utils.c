@@ -6,13 +6,13 @@
 /*   By: tvandivi <tvandivi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/04 09:13:39 by tvandivi          #+#    #+#             */
-/*   Updated: 2019/11/07 15:41:01 by tvandivi         ###   ########.fr       */
+/*   Updated: 2019/11/11 18:48:05 by tvandivi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/ft_sha224_256.h"
 
-static void     k1(uint32_t k[64])
+static void		k1(uint32_t k[64])
 {
 	k[0] = 0x428a2f98;
 	k[1] = 0x71374491;
@@ -41,7 +41,7 @@ static void     k1(uint32_t k[64])
 	k[24] = 0x983e5152;
 }
 
-static void	    k2(uint32_t k[64])
+static void		k2(uint32_t k[64])
 {
 	k[25] = 0xa831c66d;
 	k[26] = 0xb00327c8;
@@ -70,7 +70,7 @@ static void	    k2(uint32_t k[64])
 	k[49] = 0x1e376c08;
 }
 
-static void	    k3(uint32_t k[64])
+static void		k3(uint32_t k[64])
 {
 	k[50] = 0x2748774c;
 	k[51] = 0x34b0bcb5;
@@ -88,10 +88,13 @@ static void	    k3(uint32_t k[64])
 	k[63] = 0xc67178f2;
 }
 
-static void	    init_loops(t_sha256_ctx *context, uint8_t digest[32])
+static void		init_loops(t_256ctx *context, uint8_t digest[32])
 {
 	int	i;
 
+	i = 0;
+	while (i < 3)
+		context->tmp[i++] = 0;
 	i = 0;
 	while (i < 8)
 		context->abc[i++] = 0;
@@ -112,11 +115,11 @@ static void	    init_loops(t_sha256_ctx *context, uint8_t digest[32])
 		digest[i++] = 0;
 }
 
-void	        ft_sha256_init(t_sha256_ctx *ctx, uint8_t d[32], uint8_t *message)
+void			ft_sha256_init(t_256ctx *ctx, uint8_t d[32], uint8_t *msg)
 {
 	init_loops(ctx, d);
-	ctx->message = ft_uchardup(message);
-	ctx->length = ft_ustrlen(message);
+	ctx->message = ft_uchardup(msg);
+	ctx->length = ft_ustrlen(msg);
 	ctx->bit_len = (uint64_t)ctx->length * 8;
 	k1(ctx->k);
 	k2(ctx->k);
@@ -133,5 +136,4 @@ void	        ft_sha256_init(t_sha256_ctx *ctx, uint8_t d[32], uint8_t *message)
 		COUNT1 = 64;
 	else
 		COUNT1 = ctx->length;
-	// ft_printf("Length: %u bitlen: %u\n", ctx->length, ctx->bit_len);
 }
